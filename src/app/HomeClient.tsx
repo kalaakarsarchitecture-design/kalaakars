@@ -11,9 +11,11 @@ function NavOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
   const links = [
     { label: "Projects", href: "/", num: "01" },
     { label: "Studio", href: "/studio", num: "02" },
-    { label: "Index", href: "/index", num: "03" },
-    { label: "Contact", href: "/studio#contact", num: "04" },
+    { label: "Process", href: "/process", num: "03" },
+    { label: "Journal", href: "/journal", num: "04" },
+    { label: "Contact", href: "/studio#contact", num: "05" },
   ];
+
 
   return (
     <AnimatePresence>
@@ -93,14 +95,14 @@ function NavOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
 ═══════════════════════════════════════════ */
 function Marquee({ items }: { items: string[] }) {
   return (
-    <div style={{ overflow: "hidden", borderTop: "1px solid #EEE", borderBottom: "1px solid #EEE", padding: "16px 0", background: "#fff" }}>
+    <div style={{ overflow: "hidden", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "20px 0", background: "var(--bg)" }}>
       <motion.div
         animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 25, ease: "linear", repeat: Infinity }}
+        transition={{ duration: 35, ease: "linear", repeat: Infinity }}
         style={{ display: "flex", whiteSpace: "nowrap" }}
       >
         {[...items, ...items].map((item, i) => (
-          <span key={i} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.18em", color: "#AAA", paddingRight: "64px" }}>
+          <span key={i} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.22em", color: "#888", paddingRight: "80px" }}>
             {item}
           </span>
         ))}
@@ -108,6 +110,7 @@ function Marquee({ items }: { items: string[] }) {
     </div>
   );
 }
+
 
 /* ═══════════════════════════════════════════
    AWARDS STRIP
@@ -151,72 +154,77 @@ function AwardsStrip({ isMobile }: { isMobile: boolean }) {
 ═══════════════════════════════════════════ */
 function Credo({ isMobile }: { isMobile: boolean }) {
   return (
-    <section style={{ padding: isMobile ? "72px 20px" : "120px 40px", background: "#0c0c0c" }}>
-      <motion.p
-        initial={{ opacity: 0, y: 28 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "clamp(1.5rem, 4vw, 3.2rem)", letterSpacing: "-0.04em", lineHeight: 1.2, color: "#fff", maxWidth: "860px" }}
+    <section style={{ padding: isMobile ? "72px 20px" : "140px 40px", background: "#0c0c0c" }}>
+      <motion.div
+         initial={{ opacity: 0 }}
+         whileInView={{ opacity: 1 }}
+         viewport={{ once: true }}
+         transition={{ duration: 1.2 }}
       >
-        "We are architects of the Kerala coast — designing not for the moment, but for the monsoon, the light, and the centuries."
-      </motion.p>
-      <div style={{ marginTop: "48px", display: "flex", alignItems: "center", gap: "16px" }}>
-        <div style={{ width: "28px", height: "1px", background: "rgba(255,255,255,0.3)" }} />
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.18em" }}>
-          AR. VISHAL SHARMA — FOUNDING PRINCIPAL
+        <p className="u-label" style={{ color: "rgba(255,255,255,0.4)", marginBottom: "32px" }}>The Studio Philosophy</p>
+        <motion.p
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "clamp(2rem, 6vw, 4.8rem)", letterSpacing: "-0.05em", lineHeight: 1.05, color: "#fff", maxWidth: "1100px" }}
+        >
+          Rooted in the <span style={{ color: "var(--accent)" }}>Malabar monsoon</span>, shaped by light, and built for the centuries.
+        </motion.p>
+      </motion.div>
+      <div style={{ marginTop: "64px", display: "flex", alignItems: "center", gap: "16px" }}>
+        <div style={{ width: "40px", height: "1px", background: "rgba(255,255,255,0.2)" }} />
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.22em" }}>
+          ARCHITECTS OF THE KERALA COAST
         </span>
-      </div>
-      <div style={{ marginTop: "60px" }}>
-        <Link href="/studio" style={{
-          display: "inline-flex", alignItems: "center", gap: "14px",
-          fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.18em",
-          color: "#fff", padding: "14px 28px",
-          border: "1px solid rgba(255,255,255,0.2)",
-        }}>
-          THE STUDIO PROFILE
-          <svg width="18" height="7" viewBox="0 0 20 8" fill="none"><path d="M0 4H18M15 1l3 3-3 3" stroke="currentColor" strokeWidth="1" /></svg>
-        </Link>
       </div>
     </section>
   );
 }
+
 
 /* ═══════════════════════════════════════════
    FOOTER
 ═══════════════════════════════════════════ */
 function Footer({ isMobile }: { isMobile: boolean }) {
   return (
-    <footer id="contact" style={{ padding: isMobile ? "72px 20px 48px" : "100px 40px 60px", borderTop: "1px solid #EBEBEB" }}>
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: isMobile ? "48px" : "60px", marginBottom: "80px" }}>
+    <footer id="contact" style={{ padding: isMobile ? "72px 20px 48px" : "100px 40px 60px", borderTop: "1px solid var(--border)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr 1fr", gap: isMobile ? "60px" : "100px", marginBottom: "80px" }}>
         <div>
-          <p className="u-label" style={{ marginBottom: "20px" }}>STUDIO</p>
+           <p className="u-label" style={{ marginBottom: "28px" }}>Newsletter</p>
+           <p style={{ fontFamily: "var(--font-sans)", fontSize: "1.1rem", marginBottom: "24px", color: "var(--fg)" }}>Subscribe to our journal on Kerala architecture.</p>
+           <form onSubmit={(e) => e.preventDefault()} style={{ display: "flex", borderBottom: "1px solid var(--fg)", paddingBottom: "10px" }}>
+             <input type="email" placeholder="Your email address" style={{ flex: 1, background: "none", border: "none", color: "var(--fg)", fontFamily: "var(--font-sans)", fontSize: "0.9rem", outline: "none" }} />
+             <button type="submit" style={{ background: "none", border: "none", color: "var(--fg)", fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em", textTransform: "uppercase" }}>Subscribe</button>
+           </form>
+        </div>
+        <div>
+          <p className="u-label" style={{ marginBottom: "20px" }}>Connect</p>
+          <a href="mailto:hello@kalaakars.in" style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", display: "block", marginBottom: "8px" }}>hello@kalaakars.in</a>
+          <a href="https://instagram.com/kalaakars" target="_blank" rel="noreferrer" style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", display: "block", marginBottom: "8px" }}>Instagram</a>
+          <a href="https://linkedin.com/company/kalaakars" target="_blank" rel="noreferrer" style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", display: "block", marginBottom: "8px" }}>LinkedIn</a>
+        </div>
+        <div>
+          <p className="u-label" style={{ marginBottom: "20px" }}>Studio</p>
           <p style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "1rem", lineHeight: 1.65 }}>
             S.M. Street<br />Kozhikode — 673001<br />Kerala, India
           </p>
-        </div>
-        <div>
-          <p className="u-label" style={{ marginBottom: "20px" }}>CONTACT</p>
-          <a href="mailto:hello@kalaakars.in" style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", display: "block", marginBottom: "8px" }}>hello@kalaakars.in</a>
-          <a href="tel:+914952700000" style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "#666", letterSpacing: "0.05em" }}>+91 495 270 0000</a>
-        </div>
-        <div>
-          <p className="u-label" style={{ marginBottom: "20px" }}>SOCIAL</p>
-          {["Instagram", "LinkedIn", "Behance"].map(s => (
-            <a key={s} href="#" style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", display: "block", marginBottom: "8px" }}>{s}</a>
-          ))}
+          <Link href="/process" style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--accent)", letterSpacing: "0.1em", marginTop: "16px", display: "block" }}>OUR PROCESS ↗</Link>
         </div>
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: isMobile ? "column" : "row", gap: "12px", paddingTop: "32px", borderTop: "1px solid #F0F0F0" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: isMobile ? "column" : "row", gap: "24px", paddingTop: "32px", borderTop: "1px solid var(--border)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <img src="/logo.svg" alt="K" style={{ width: "18px", height: "22px", objectFit: "contain" }} />
           <span className="u-label">© 2024 KALAAKARS ARCHITECTURE STUDIO</span>
         </div>
-        <span className="u-label">CALICUT · KERALA · INDIA</span>
+        <div style={{ display: "flex", gap: "24px" }}>
+           <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="u-label" style={{ background: "none", border: "none", color: "var(--accent)" }}>Back to top ↑</button>
+        </div>
       </div>
     </footer>
   );
 }
+
 
 /* ═══════════════════════════════════════════
    HOME PAGE COMPONENT
@@ -440,17 +448,44 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
                 {initialProjects.map((p, i) => {
                   const isActive = activeIdx === i;
                   return (
-                    <div key={p.id} onMouseEnter={() => setActiveIdx(i)} onClick={() => setActiveIdx(i)} style={{ padding: "22px 32px", cursor: "pointer", borderLeft: isActive ? "2px solid #111" : "2px solid transparent", transition: "border-color 0.3s" }}>
-                      <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.1em", color: isActive ? "#111" : "#bbb", marginBottom: "6px", transition: "color 0.3s" }}>{p.num}</p>
-                      <Link href={`/projects/${p.slug}`} style={{ textDecoration: "none" }}>
-                        <p style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(1.3rem, 2vw, 1.7rem)", letterSpacing: "-0.03em", color: isActive ? "#111" : "#888", lineHeight: 1.15, transition: "color 0.35s" }}>
-                          {p.title.split(" ").map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
-                        </p>
-                      </Link>
+                    <div 
+                        key={p.id} 
+                        onMouseEnter={() => setActiveIdx(i)} 
+                        onClick={() => setActiveIdx(i)} 
+                        style={{ 
+                            padding: "20px 32px", 
+                            cursor: "pointer", 
+                            borderLeft: isActive ? "2px solid var(--accent)" : "2px solid transparent", 
+                            transition: "all 0.3s var(--ease-expo)",
+                            background: isActive ? "rgba(0,0,0,0.02)" : "transparent"
+                        }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "6px" }}>
+                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.1em", color: isActive ? "var(--accent)" : "#bbb", transition: "color 0.3s" }}>{p.num}</p>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "#ccc", letterSpacing: "0.05em" }}>{p.year}</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                        <Link href={`/projects/${p.slug}`} style={{ textDecoration: "none", flex: 1 }}>
+                            <p style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(1.2rem, 1.8vw, 1.5rem)", letterSpacing: "-0.02em", color: isActive ? "#111" : "#888", lineHeight: 1.15, transition: "color 0.35s" }}>
+                            {p.title.split(" ").map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
+                            </p>
+                        </Link>
+                        {isActive && (
+                            <motion.img 
+                                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                                src={p.heroImg} 
+                                style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "2px" }} 
+                            />
+                        )}
+                      </div>
+                      <div style={{ marginTop: "8px", display: "flex", gap: "8px" }}>
+                         <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", padding: "2px 6px", border: `1px solid ${isActive ? 'var(--accent)' : '#eee'}`, borderRadius: "100px", color: isActive ? 'var(--accent)' : '#999' }}>{p.category}</span>
+                      </div>
                     </div>
                   );
                 })}
               </nav>
+
               <div style={{ padding: "24px 32px" }}>
                 <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.15em", color: "#ccc" }}>CALICUT · KERALA</p>
               </div>
@@ -461,62 +496,55 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
               <AnimatePresence mode="sync">
                 <motion.div
                   key={active.heroImg}
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  transition={{ duration: 0.65 }}
+                  initial={{ opacity: 0, scale: 1.05 }} 
+                  animate={{ opacity: 1, scale: 1 }} 
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                   style={{ position: "absolute", inset: 0, backgroundImage: `url(${active.heroImg})`, backgroundSize: "cover", backgroundPosition: "center" }}
                 />
               </AnimatePresence>
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(0,0,0,0.08), rgba(0,0,0,0.45))" }} />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%, rgba(0,0,0,0.3) 100%)" }} />
 
               {/* Top-right: CTAs + Hamburger */}
-              <div style={{ position: "absolute", top: "28px", right: "28px", display: "flex", alignItems: "center", gap: "12px", zIndex: 20 }}>
-                <Link href="/studio" style={{ padding: "10px 18px", background: "rgba(20,20,20,0.75)", backdropFilter: "blur(8px)", color: "#fff", fontFamily: "var(--font-sans)", fontSize: "0.75rem", fontWeight: 500, borderRadius: "4px", border: "1px solid rgba(255,255,255,0.15)", whiteSpace: "nowrap" as const }}>Studio Profile</Link>
-                <Link href="/studio#contact" style={{ padding: "10px 18px", background: "rgba(20,20,20,0.75)", backdropFilter: "blur(8px)", color: "#fff", fontFamily: "var(--font-sans)", fontSize: "0.75rem", fontWeight: 500, borderRadius: "4px", border: "1px solid rgba(255,255,255,0.15)", whiteSpace: "nowrap" as const }}>Free Consultation</Link>
-                <button onClick={() => setNavOpen(true)} style={{ background: "rgba(20,20,20,0.75)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "4px", cursor: "pointer", padding: "10px 12px", display: "flex", flexDirection: "column", gap: "5px" }}>
-                  <div style={{ width: "20px", height: "2px", background: "#fff" }} />
-                  <div style={{ width: "20px", height: "2px", background: "#fff" }} />
-                  <div style={{ width: "14px", height: "2px", background: "#fff" }} />
+              <div style={{ position: "absolute", top: "32px", right: "32px", display: "flex", alignItems: "center", gap: "16px", zIndex: 20 }}>
+                <Link href="/studio" style={{ padding: "12px 24px", background: "rgba(255,255,255,0.08)", backdropFilter: "blur(16px)", color: "#fff", fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em", borderRadius: "100px", border: "1px solid rgba(255,255,255,0.2)", transition: "background 0.3s" }}>STUDIO</Link>
+                <Link href="/studio#contact" style={{ padding: "12px 24px", background: "var(--accent)", color: "#fff", fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em", borderRadius: "100px", border: "none" }}>ENQUIRE</Link>
+                <button onClick={() => setNavOpen(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <div style={{ width: "24px", height: "1.5px", background: "#fff" }} />
+                  <div style={{ width: "16px", height: "1.5px", background: "#fff" }} />
                 </button>
               </div>
 
-              {/* Studio name overlay */}
-              <div style={{ position: "absolute", bottom: "80px", right: "0", left: "0", display: "flex", flexDirection: "column", alignItems: "flex-end", paddingRight: "32px", zIndex: 10, pointerEvents: "none" }}>
+              {/* Studio name overlay — ANIMATED */}
+              <div style={{ position: "absolute", bottom: "100px", left: "60px", zIndex: 10, pointerEvents: "none" }}>
                 <AnimatePresence mode="wait">
-                  <motion.div key={activeIdx} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} style={{ textAlign: "right" }}>
-                    <div style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "clamp(4rem, 10vw, 9rem)", letterSpacing: "-0.04em", lineHeight: 0.85, color: "#fff", textTransform: "uppercase" }}>KALAAKARS</div>
-                    <div style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "clamp(1rem, 3vw, 2.4rem)", letterSpacing: "0.35em", color: "rgba(255,255,255,0.85)", textTransform: "uppercase", marginTop: "6px" }}>ARCHITECTURE</div>
+                  <motion.div 
+                    key={activeIdx} 
+                    initial={{ opacity: 0, y: 40 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -20 }} 
+                    transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <div style={{ fontFamily: "var(--font-sans)", fontWeight: 800, fontSize: "clamp(4rem, 12vw, 11rem)", letterSpacing: "-0.05em", lineHeight: 0.8, color: "#fff", textTransform: "uppercase" }}>KALAAKARS</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "20px", marginTop: "12px" }}>
+                        <div style={{ width: "40px", height: "1px", background: "rgba(255,255,255,0.5)" }} />
+                        <div style={{ fontFamily: "var(--font-sans)", fontWeight: 200, fontSize: "clamp(1rem, 2.5vw, 2rem)", letterSpacing: "0.45em", color: "rgba(255,255,255,0.7)", textTransform: "uppercase" }}>ARCHITECTURE</div>
+                    </div>
                   </motion.div>
                 </AnimatePresence>
               </div>
 
-              {/* Bottom-left badge */}
-              <div style={{ position: "absolute", bottom: "28px", left: "28px", zIndex: 20, display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={{ width: "56px", height: "56px", borderRadius: "50%", border: "2px solid rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.1)", backdropFilter: "blur(4px)" }}>
-                  <img src="/logo.svg" alt="K" style={{ width: "22px", height: "26px", objectFit: "contain", filter: "brightness(0) invert(1)" }} />
-                </div>
-                <div>
-                  <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.7rem", fontWeight: 600, color: "#fff", lineHeight: 1.2 }}>kalaakars</p>
-                  <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(255,255,255,0.6)", letterSpacing: "0.1em" }}>ARCHITECTURE STUDIO</p>
-                </div>
-              </div>
-
-              {/* Bottom-right tagline */}
-              <div style={{ position: "absolute", bottom: "32px", right: "32px", zIndex: 20, display: "flex", alignItems: "center", gap: "16px" }}>
-                <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.25em", color: "rgba(255,255,255,0.8)", textTransform: "uppercase" }}>DESIGN DRIVEN STUDIO</p>
-                <div style={{ width: "24px", height: "1px", background: "rgba(255,255,255,0.6)" }} />
-                <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>{active.location}</p>
-              </div>
-
-              {/* Top-left project info */}
-              <div style={{ position: "absolute", top: "32px", left: "32px", zIndex: 20 }}>
+              {/* Bottom project info */}
+              <div style={{ position: "absolute", bottom: "40px", right: "40px", zIndex: 20, textAlign: "right" }}>
                 <AnimatePresence mode="wait">
-                  <motion.div key={activeIdx} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
-                    <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.25em", color: "rgba(255,255,255,0.6)", marginBottom: "4px" }}>{active.category} · {active.year}</p>
-                    <Link href={`/projects/${active.slug}`} style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "0.9rem", color: "#fff", borderBottom: "1px solid rgba(255,255,255,0.4)", paddingBottom: "2px" }}>View Project →</Link>
+                  <motion.div key={activeIdx} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.4 }}>
+                    <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.25em", color: "var(--accent)", marginBottom: "8px" }}>{active.category} · {active.year}</p>
+                    <Link href={`/projects/${active.slug}`} style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "1.1rem", color: "#fff", letterSpacing: "-0.01em" }}>View Project Details →</Link>
                   </motion.div>
                 </AnimatePresence>
               </div>
             </div>
+
           </div>
         )}
 

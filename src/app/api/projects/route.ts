@@ -23,6 +23,17 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { gallery, specs, ...data } = body;
 
+        // Clean gallery and specs to avoid Prisma errors with extra fields like 'id' or 'projectId'
+        const cleanedGallery = (gallery ?? []).map((img: any) => ({
+            src: img.src,
+            span: img.span || "half"
+        }));
+
+        const cleanedSpecs = (specs ?? []).map((spec: any) => ({
+            label: spec.label,
+            value: spec.value
+        }));
+
         const project = await prisma.project.create({
             data: {
                 slug: data.slug,
@@ -35,14 +46,16 @@ export async function POST(req: Request) {
                 heroImg: data.hero_img || data.heroImg,
                 story: data.story,
                 pullQuote: data.pull_quote || data.pullQuote,
-                gallery: { create: gallery ?? [] },
-                specs: { create: specs ?? [] },
+                gallery: { create: cleanedGallery },
+                specs: { create: cleanedSpecs },
             },
             include: { gallery: true, specs: true },
         });
 
         return NextResponse.json(project, { status: 201 });
     } catch (err: any) {
+        console.error("Project Create Error:", err);
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }
+

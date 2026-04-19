@@ -67,20 +67,51 @@ function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 export default function ProjectClient({ project, nextProject }: { project: any, nextProject: any }) {
     const router = useRouter();
     const isMobile = useIsMobile();
+    const [selectedImg, setSelectedImg] = React.useState<string | null>(null);
 
     const heroRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll();
     const { scrollY } = useScroll();
-    const heroY = useTransform(scrollY, [0, 900], [0, isMobile ? 120 : 280]);
+    const heroY = useTransform(scrollY, [0, 900], [0, isMobile ? 120 : 250]);
     const heroOpacity = useTransform(scrollY, [0, 700], [1, 0.2]);
 
-    if (!project) return <div style={{ padding: "200px 24px", fontFamily: "var(--font-sans)" }}>Project not found.</div>;
+    if (!project) return <div style={{ padding: "200px 24px" }}>Project not found.</div>;
 
     const pad = isMobile ? "64px 20px" : "120px 40px";
 
     return (
-        <main style={{ background: "#fff" }}>
+        <main style={{ background: "var(--bg)", color: "var(--fg)" }}>
+            {/* Scroll Progress */}
+            <motion.div
+                style={{
+                    position: "fixed", top: 0, left: 0, right: 0, height: "3px",
+                    background: "var(--accent)", transformOrigin: "0%", zIndex: 10000,
+                    scaleX: scrollYProgress
+                }}
+            />
+
+            {/* Lightbox */}
+            <AnimatePresence>
+                {selectedImg && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setSelectedImg(null)}
+                        style={{ position: "fixed", inset: 0, zIndex: 99999, background: "rgba(0,0,0,0.95)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", cursor: "zoom-out" }}
+                    >
+                        <motion.img 
+                            initial={{ scale: 0.95 }} animate={{ scale: 1 }}
+                            src={selectedImg} alt="Lightbox" 
+                            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} 
+                        />
+                        <button style={{ position: "absolute", top: "40px", right: "40px", background: "none", border: "none", color: "#fff", fontSize: "2rem", cursor: "pointer" }}>✕</button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* 1. HERO */}
-            <section ref={heroRef} style={{ height: isMobile ? "70vh" : "100vh", position: "relative", overflow: "hidden" }}>
+            <section ref={heroRef} style={{ height: isMobile ? "75vh" : "100vh", position: "relative", overflow: "hidden" }}>
                 <Navbar />
                 <motion.div
                     style={{
@@ -90,52 +121,63 @@ export default function ProjectClient({ project, nextProject }: { project: any, 
                         y: heroY, opacity: heroOpacity, willChange: "transform",
                     }}
                 />
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 55%)" }} />
-                <div style={{ position: "absolute", bottom: isMobile ? "28px" : "52px", left: isMobile ? "20px" : "40px", right: isMobile ? "20px" : "40px", color: "#fff" }}>
-                    <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.18em", opacity: 0.7, marginBottom: "12px" }}>
-                        {project.category} — {project.location} — {project.year}
-                    </p>
-                    <h1 style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(2.2rem, 8vw, 7rem)", letterSpacing: "-0.04em", lineHeight: 0.9 }}>
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)" }} />
+                <div style={{ position: "absolute", bottom: isMobile ? "28px" : "60px", left: isMobile ? "20px" : "40px", right: isMobile ? "20px" : "40px", color: "#fff" }}>
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.22em", color: "var(--accent)", marginBottom: "16px" }}>
+                        {project.category} · {project.location} · {project.year}
+                    </motion.p>
+                    <h1 style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(2.4rem, 10vw, 8rem)", letterSpacing: "-0.04em", lineHeight: 0.85 }}>
                         {project.title}
                     </h1>
                 </div>
             </section>
 
-            {/* 2. INTRO */}
-            <section style={{ padding: pad, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.6fr", gap: isMobile ? "32px" : "80px", borderBottom: "1px solid #EBEBEB" }}>
+            {/* 2. NARRATIVE (Concept + Story) */}
+            <section style={{ padding: pad, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "48px" : "120px", borderBottom: "1px solid var(--border)" }}>
                 <div>
                     <Reveal>
-                        <p className="u-label" style={{ marginBottom: "20px" }}>The Concept</p>
-                        <h2 style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: isMobile ? "1.5rem" : "clamp(1.8rem, 3vw, 2.6rem)", letterSpacing: "-0.04em", lineHeight: 1.1 }}>
+                        <p className="u-label" style={{ marginBottom: "24px" }}>The Concept</p>
+                        <h2 style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: isMobile ? "1.6rem" : "2.6rem", letterSpacing: "-0.03em", lineHeight: 1.2, color: "var(--fg)" }}>
                             {project.subtitle}
                         </h2>
                     </Reveal>
                 </div>
-                <div style={{ display: "flex", alignItems: "flex-end" }}>
-                    <Reveal delay={0.12}>
-                        <p style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: isMobile ? "1rem" : "1.2rem", lineHeight: 1.65, color: "#444" }}>
+                <div>
+                    <Reveal delay={0.2}>
+                         <p className="u-label" style={{ marginBottom: "24px" }}>Project Story</p>
+                        <div style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "1.1rem", lineHeight: 1.7, color: "#555" }}>
                             {project.story}
-                        </p>
+                        </div>
                     </Reveal>
                 </div>
             </section>
 
-            {/* 3. GALLERY */}
-            <section>
+            {/* 3. GALLERY with Lightbox trigger */}
+            <section style={{ background: "#0c0c0c" }}>
                 {(() => {
                     const rows: React.ReactNode[] = [];
                     let i = 0;
                     while (i < project.gallery.length) {
                         const img = project.gallery[i];
                         if (img.span === "full" || isMobile) {
-                            rows.push(<GalleryImg key={i} src={img.src} height={isMobile ? "56vw" : "90vh"} />);
+                            rows.push(
+                                <div key={i} onClick={() => setSelectedImg(img.src)} style={{ cursor: "zoom-in" }}>
+                                    <GalleryImg src={img.src} height={isMobile ? "65vw" : "95vh"} />
+                                </div>
+                            );
                             i++;
                         } else {
                             const next = project.gallery[i + 1];
                             rows.push(
                                 <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-                                    <GalleryImg src={img.src} height="80vh" />
-                                    {next ? <GalleryImg src={next.src} height="80vh" /> : <div />}
+                                    <div onClick={() => setSelectedImg(img.src)} style={{ cursor: "zoom-in" }}>
+                                        <GalleryImg src={img.src} height="85vh" />
+                                    </div>
+                                    {next ? (
+                                        <div onClick={() => setSelectedImg(next.src)} style={{ cursor: "zoom-in" }}>
+                                            <GalleryImg src={next.src} height="85vh" />
+                                        </div>
+                                    ) : <div />}
                                 </div>
                             );
                             i += 2;
@@ -147,43 +189,44 @@ export default function ProjectClient({ project, nextProject }: { project: any, 
 
             {/* 4. PULL QUOTE */}
             {project.pullQuote && (
-                <section style={{ padding: pad, borderTop: "1px solid #EBEBEB" }}>
+                <section style={{ padding: pad, textAlign: "center", borderTop: "1px solid var(--border)" }}>
                     <Reveal>
-                        <blockquote style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: isMobile ? "1.4rem" : "clamp(1.8rem, 4vw, 3.5rem)", letterSpacing: "-0.04em", lineHeight: 1.15, maxWidth: "860px" }}>
-                            "{project.pullQuote}"
+                        <blockquote style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: isMobile ? "1.6rem" : "3.5rem", letterSpacing: "-0.05em", lineHeight: 1.1, maxWidth: "1000px", margin: "0 auto" }}>
+                            "<span style={{ color: "var(--accent)" }}>{project.pullQuote}</span>"
                         </blockquote>
                     </Reveal>
                 </section>
             )}
 
             {/* 5. SPECS */}
-            <section style={{ padding: pad, borderTop: "1px solid #EBEBEB" }}>
-                <p className="u-label" style={{ marginBottom: "48px" }}>Technical Specifications</p>
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)", gap: isMobile ? "24px 16px" : "40px 60px" }}>
+            <section style={{ padding: pad, borderTop: "1px solid var(--border)", background: "#fafafa" }}>
+                <p className="u-label" style={{ marginBottom: "60px" }}>Specifications</p>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: isMobile ? "32px 20px" : "60px" }}>
                     {project.specs.map((spec: any) => (
-                        <div key={spec.label} style={{ borderTop: "1px solid #EBEBEB", paddingTop: "16px" }}>
-                            <p className="u-label" style={{ marginBottom: "8px" }}>{spec.label}</p>
-                            <p style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: isMobile ? "0.9rem" : "1rem" }}>{spec.value}</p>
+                        <div key={spec.label}>
+                            <p className="u-label" style={{ marginBottom: "12px", color: "#bbb" }}>{spec.label}</p>
+                            <p style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "1.05rem" }}>{spec.value}</p>
                         </div>
                     ))}
                 </div>
             </section>
 
-            {/* 6. NEXT PROJECT */}
+            {/* 6. NEXT PROJECT (Kinetic Section) */}
             <section
                 onClick={() => router.push(`/projects/${nextProject.slug}`)}
-                style={{ position: "relative", height: isMobile ? "55vh" : "80vh", cursor: "pointer", overflow: "hidden" }}
+                style={{ position: "relative", height: isMobile ? "60vh" : "90vh", cursor: "pointer", overflow: "hidden", background: "#000" }}
             >
                 <motion.div
-                    whileHover={{ scale: 1.04 }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ position: "absolute", inset: 0, backgroundImage: `url(${nextProject.heroImg})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                    whileHover={{ scale: 1.05, opacity: 0.8 }}
+                    transition={{ duration: 1, ease: "var(--ease-expo)" }}
+                    style={{ position: "absolute", inset: 0, backgroundImage: `url(${nextProject.heroImg})`, backgroundSize: "cover", backgroundPosition: "center", opacity: 0.6 }}
                 />
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.42)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", padding: "20px" }}>
-                    <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.3em", marginBottom: "20px", opacity: 0.7 }}>NEXT PROJECT</p>
-                    <h2 style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(1.8rem, 7vw, 6rem)", letterSpacing: "-0.04em", textAlign: "center" as const }}>
+                <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", padding: "40px" }}>
+                    <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.3em", marginBottom: "32px", color: "var(--accent)" }}>RELATIONAL WORKS</p>
+                    <h2 style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(2.5rem, 8vw, 7.5rem)", letterSpacing: "-0.04em", textAlign: "center" as const, lineHeight: 0.9 }}>
                         {nextProject.title}
                     </h2>
+                    <div style={{ marginTop: "48px", width: "1px", height: "80px", background: "#fff" }} />
                 </div>
             </section>
 
@@ -191,3 +234,4 @@ export default function ProjectClient({ project, nextProject }: { project: any, 
         </main>
     );
 }
+

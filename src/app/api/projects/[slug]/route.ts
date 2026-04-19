@@ -34,6 +34,18 @@ export async function PUT(
         const body = await req.json();
         const { gallery, specs, id, createdAt, updatedAt, created_at, updated_at, gallery_images, ...data } = body;
 
+        // Clean gallery and specs of extra fields (like id, projectId, timestamps) 
+        // that cause Prisma to fail on nested creates.
+        const cleanedGallery = (gallery ?? []).map((img: any) => ({
+            src: img.src,
+            span: img.span || "half"
+        }));
+
+        const cleanedSpecs = (specs ?? []).map((spec: any) => ({
+            label: spec.label,
+            value: spec.value
+        }));
+
         // Delete old relations and re-create
         await prisma.galleryImage.deleteMany({ where: { project: { slug } } });
         await prisma.spec.deleteMany({ where: { project: { slug } } });
@@ -51,8 +63,8 @@ export async function PUT(
                 heroImg: data.hero_img || data.heroImg,
                 story: data.story,
                 pullQuote: data.pull_quote || data.pullQuote,
-                gallery: { create: gallery ?? [] },
-                specs: { create: specs ?? [] },
+                gallery: { create: cleanedGallery },
+                specs: { create: cleanedSpecs },
             },
             include: { gallery: true, specs: true },
         });
@@ -63,9 +75,11 @@ export async function PUT(
             pull_quote: project.pullQuote,
         });
     } catch (err: any) {
+        console.error("Project Update Error:", err);
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }
+
 
 export async function DELETE(
     _req: Request,

@@ -1,22 +1,23 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 
-// Configure Cloudinary from Environment Variables
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-    secure: true, // Use HTTPS
-});
-
 const MAX_MB = 10;
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
 
 export async function POST(req: Request) {
+    // Configure Cloudinary inside the handler to ensure environment variables are loaded
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+        secure: true,
+    });
+
     let formData: FormData;
     try {
         formData = await req.formData();
-    } catch {
+    } catch (e) {
+        console.error("Form data parsing error:", e);
         return NextResponse.json({ error: "Invalid form data" }, { status: 400 });
     }
 
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
 
     // Ensure Cloudinary is actually configured
     if (!process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME === "your_cloud_name") {
+        console.error("Cloudinary config missing. Found:", process.env.CLOUDINARY_CLOUD_NAME);
         return NextResponse.json(
             { error: "Cloudinary is not configured in .env.local yet." },
             { status: 500 }
@@ -37,7 +39,7 @@ export async function POST(req: Request) {
     // Validate type
     if (!ALLOWED.includes(file.type)) {
         return NextResponse.json(
-            { error: `Unsupported file type. Allowed: JPEG, PNG, WebP, GIF, AVIF` },
+            { error: `Unsupported file type (${file.type}). Allowed: JPEG, PNG, WebP, GIF, AVIF` },
             { status: 415 }
         );
     }
@@ -59,13 +61,20 @@ export async function POST(req: Request) {
             return new Promise<UploadApiResponse>((resolve, reject) => {
                 const uploadStream = cloudinary.uploader.upload_stream(
                     {
-                        folder: "kalaakars", // Store all uploads in a folder
-                        format: "webp", // Automatically convert to WebP for optimization
-                        quality: "auto", // Auto-compress without losing visible quality
+                        folder: "kalaakars",
+                        resource_type: "auto", // Allow automatic detection of resource type
+                        format: "webp", 
+                        quality: "auto",
                     },
                     (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result as UploadApiResponse);
+                        if (error) {
+                            console.error("Cloudinary stream error:", error);
+                            reject(error);
+                        } else if (!result) {
+                            reject(new Error("Cloudinary upload resulted in empty response"));
+                        } else {
+                            resolve(result);
+                        }
                     }
                 );
 
@@ -73,15 +82,17 @@ export async function POST(req: Request) {
             });
         };
 
+        console.log(`Uploading file to Cloudinary: ${file.name} (${file.type}), size: ${file.size}`);
         const uploadResult = await uploadToCloudinary();
+        console.log("Cloudinary Upload Success:", uploadResult.secure_url);
 
-        // Return the secure, optimized Cloudinary URL
         return NextResponse.json({ url: uploadResult.secure_url });
     } catch (error: any) {
-        console.error("Cloudinary Upload Error:", error);
+        console.error("Cloudinary Upload Exception:", error);
         return NextResponse.json(
-            { error: error?.message ?? "Cloudinary upload failed" },
+            { error: error?.message || (typeof error === 'string' ? error : "Cloudinary upload failed") },
             { status: 500 }
         );
     }
 }
+
