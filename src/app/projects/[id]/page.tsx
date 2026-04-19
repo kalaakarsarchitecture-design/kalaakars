@@ -11,38 +11,39 @@ export default async function ProjectPage({
 }) {
     const { id } = await params;
 
-    const project = await prisma.project.findUnique({
-        where: { slug: id },
-        include: { gallery: true, specs: true },
-    });
+    try {
+        const project = await prisma.project.findUnique({
+            where: { slug: id },
+            include: { gallery: true, specs: true },
+        });
 
-    if (!project) return notFound();
+        if (!project) return notFound();
 
-    // Find the next project by number, looping back to first if it's the last one
-    let nextProject = await prisma.project.findFirst({
-        where: { num: { gt: project.num } },
-        orderBy: { num: "asc" },
-    });
-
-    if (!nextProject) {
-        nextProject = await prisma.project.findFirst({
+        let nextProject = await prisma.project.findFirst({
+            where: { num: { gt: project.num } },
             orderBy: { num: "asc" },
         });
-    }
 
-    const mappedProject = {
-        ...project,
-        heroImg: project.heroImg,
-        hero_img: project.heroImg, // Ensure both exist for compatibility
-        pullQuote: project.pullQuote,
-    };
-
-    const mappedNext = nextProject
-        ? {
-            ...nextProject,
-            heroImg: nextProject.heroImg,
+        if (!nextProject) {
+            nextProject = await prisma.project.findFirst({
+                orderBy: { num: "asc" },
+            });
         }
-        : mappedProject; // Fallback if there's only 1 project total
 
-    return <ProjectClient project={mappedProject} nextProject={mappedNext} />;
+        const mappedProject = {
+            ...project,
+            heroImg: project.heroImg,
+            hero_img: project.heroImg,
+            pullQuote: project.pullQuote,
+        };
+
+        const mappedNext = nextProject
+            ? { ...nextProject, heroImg: nextProject.heroImg }
+            : mappedProject;
+
+        return <ProjectClient project={mappedProject} nextProject={mappedNext} />;
+    } catch (e) {
+        console.error("DB error on project page:", e);
+        return notFound();
+    }
 }
