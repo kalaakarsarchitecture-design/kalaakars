@@ -3,23 +3,9 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { SiteNavbar } from "@/components/ui/MobileNav";
 
-function Navbar({ dark = false }: { dark?: boolean }) {
-    const c = dark ? "#fff" : "#111";
-    return (
-        <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9000, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <img src="/logo.svg" alt="K" style={{ width: "22px", height: "26px", objectFit: "contain", filter: dark ? "brightness(0) invert(1)" : "none" }} />
-                <span style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "1.2rem", color: c }}>Kalaakars</span>
-            </Link>
-            <nav style={{ display: "flex", gap: "28px" }}>
-                {[["PROJECTS", "/projects"], ["STUDIO", "/studio"], ["JOURNAL", "/journal"]].map(([l, h]) => (
-                    <Link key={l} href={h} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em", color: dark ? "rgba(255,255,255,0.7)" : "#999" }}>{l}</Link>
-                ))}
-            </nav>
-        </header>
-    );
-}
+
 
 export default function StudioClient({ settings }: { settings: any }) {
     const isMobile = useIsMobile();
@@ -44,8 +30,8 @@ export default function StudioClient({ settings }: { settings: any }) {
     return (
         <main style={{ background: "var(--bg)", color: "var(--fg)" }}>
             {/* Hero */}
-            <section style={{ height: "100vh", position: "relative", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", background: "#0c0c0c" }}>
-                <Navbar dark />
+            <section style={{ height: "100vh", minHeight: "600px", position: "relative", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", background: "#0c0c0c" }}>
+                <SiteNavbar dark transparent />
                 <div style={{ padding: "20px", color: "#fff", zIndex: 10 }}>
                     <motion.p 
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}

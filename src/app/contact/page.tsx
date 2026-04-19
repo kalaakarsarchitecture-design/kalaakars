@@ -3,29 +3,16 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { SiteNavbar } from "@/components/ui/MobileNav";
 
-function Navbar() {
-    return (
-        <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9000, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.8)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}>
-            <Link href="/" style={{ display: "flex", alignItems: "center", gap: "9px" }}>
-                <img src="/logo.svg" alt="K" style={{ width: "22px", height: "26px", objectFit: "contain" }} />
-                <span style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "1.2rem", color: "var(--fg)" }}>Kalaakars</span>
-            </Link>
-            <nav style={{ display: "flex", gap: "24px" }}>
-                {[["PROJECTS", "/projects"], ["STUDIO", "/studio"]].map(([l, h]) => (
-                    <Link key={l} href={h} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em", color: "#666" }}>{l}</Link>
-                ))}
-            </nav>
-        </header>
-    );
-}
+
 
 export default function ContactPage() {
     const isMobile = useIsMobile();
 
     return (
         <main style={{ background: "var(--bg)", color: "var(--fg)", minHeight: "100vh" }}>
-            <Navbar />
+            <SiteNavbar />
             
             <section style={{ padding: isMobile ? "120px 20px 60px" : "180px 40px 100px", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr 1fr", gap: "100px" }}>
                 <div>
