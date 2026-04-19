@@ -130,42 +130,7 @@ function NavOverlay({ open, onClose, settings }: { open: boolean; onClose: () =>
 
 
 
-/* ═══════════════════════════════════════════
-   AWARDS STRIP
-═══════════════════════════════════════════ */
-function AwardsStrip({ isMobile }: { isMobile: boolean }) {
-  const awards = [
-    { year: "2024", title: "Kerala Architecture Award", cat: "Residential" },
-    { year: "2024", title: "Malabar Design Prize", cat: "Shortlisted" },
-    { year: "2023", title: "South India Architecture", cat: "Commercial" },
-    { year: "2023", title: "JK Cement Architectural Award", cat: "Cultural" },
-  ];
 
-  return (
-    <section style={{ padding: isMobile ? "72px 20px" : "100px 40px", borderTop: "1px solid #EBEBEB" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "flex-end", flexDirection: isMobile ? "column" : "row", gap: "12px", marginBottom: "48px" }}>
-        <h2 style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "clamp(2.5rem, 6vw, 4rem)", letterSpacing: "-0.03em" }}>Recognition</h2>
-        <span className="u-label">LEGACY OF 8 YEARS</span>
-      </div>
-      {awards.map((a, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ delay: i * 0.07, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px 0", borderTop: "1px solid #EBEBEB" }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "20px" : "48px" }}>
-            <span className="u-label" style={{ width: "36px", flexShrink: 0 }}>{a.year}</span>
-            <span style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: isMobile ? "1.2rem" : "1.6rem", letterSpacing: "-0.01em" }}>{a.title}</span>
-          </div>
-          {!isMobile && <span className="u-label">{a.cat}</span>}
-        </motion.div>
-      ))}
-    </section>
-  );
-}
 
 /* ═══════════════════════════════════════════
    CREDO (dark section)
@@ -664,8 +629,7 @@ export default function HomeClient({ initialProjects, initialSettings }: { initi
         <Marquee text={tickerItems.join("  ✦  ")} />
 
 
-        {/* ── AWARDS ── */}
-        <AwardsStrip isMobile={isMobile} />
+
 
         {/* ── CREDO ── */}
         <Credo isMobile={isMobile} />
