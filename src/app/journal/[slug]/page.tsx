@@ -46,7 +46,7 @@ export default function JournalPostPage() {
                      <motion.img 
                         initial={{ scale: 1.1, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 1.5, ease: "var(--ease-expo)" }}
+                        transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
                         src={post.image} 
                         style={{ width: "100%", height: "100%", objectFit: "cover" }} 
                     />

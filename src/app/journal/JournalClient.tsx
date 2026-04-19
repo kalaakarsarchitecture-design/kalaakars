@@ -45,13 +45,13 @@ export default function JournalClient({ initialPosts, settings }: { initialPosts
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 1, ease: "var(--ease-expo)" }}
+                            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                         >
                             <Link href={`/journal/${post.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
                                 <div style={{ aspectRatio: "16/9", overflow: "hidden", marginBottom: "32px", background: "#f0f0f0" }}>
                                     <motion.img 
                                         whileHover={{ scale: 1.05 }}
-                                        transition={{ duration: 1.2, ease: "var(--ease-expo)" }}
+                                        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                                         src={post.image} alt={post.title} 
                                         style={{ width: "100%", height: "100%", objectFit: "cover" }} 
                                     />

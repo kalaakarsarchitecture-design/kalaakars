@@ -54,7 +54,7 @@ export default function StudioClient({ settings }: { settings: any }) {
                         Kalaakars Architecture Studio
                     </motion.p>
                     <motion.h1 
-                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: "var(--ease-expo)" }}
+                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                         style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: isMobile ? "12vw" : "clamp(3.5rem, 10vw, 9rem)", letterSpacing: "-0.04em", lineHeight: 0.9, textTransform: "uppercase" }}
                     >
                         Mastery in<br />Space & Craft

@@ -167,7 +167,7 @@ export default function ProjectClient({ project, nextProject }: { project: any, 
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: i * 0.1, duration: 0.8, ease: "var(--ease-expo)" }}
+                            transition={{ delay: i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                             onClick={() => setSelectedImg(img.src)} 
                             style={{ 
                                 cursor: "zoom-in", 
@@ -242,7 +242,7 @@ export default function ProjectClient({ project, nextProject }: { project: any, 
             >
                 <motion.div
                     whileHover={{ scale: 1.05, opacity: 0.8 }}
-                    transition={{ duration: 1, ease: "var(--ease-expo)" }}
+                    transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                     style={{ position: "absolute", inset: 0, backgroundImage: `url(${nextProject.heroImg})`, backgroundSize: "cover", backgroundPosition: "center", opacity: 0.6 }}
                 />
                 <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", padding: "40px" }}>

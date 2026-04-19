@@ -73,7 +73,7 @@ function NavOverlay({ open, onClose, settings }: { open: boolean; onClose: () =>
                         fontWeight: 400,
                         lineHeight: 1,
                         letterSpacing: "-0.04em",
-                        transition: "transform 0.3s var(--ease-expo)",
+                        transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
                       }} className="nav-link-hover">
                         {link.label}
                       </span>
@@ -253,7 +253,7 @@ function FAQ({ isMobile }: { isMobile: boolean }) {
                     initial={{ height: 0, opacity: 0 }} 
                     animate={{ height: "auto", opacity: 1 }} 
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.5, ease: "var(--ease-expo)" }}
+                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     style={{ overflow: "hidden" }}
                    >
                      <p style={{ fontFamily: "var(--font-sans)", fontSize: "1.05rem", lineHeight: 1.7, color: "#666", paddingBottom: "32px", maxWidth: "600px" }}>
@@ -536,7 +536,7 @@ export default function HomeClient({ initialProjects, initialSettings }: { initi
                             padding: "20px 40px", 
                             cursor: "pointer", 
                             position: "relative",
-                            transition: "all 0.4s var(--ease-expo)",
+                            transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                             background: isActive ? "rgba(212, 165, 32, 0.03)" : "transparent",
                             borderBottom: "1px solid rgba(0,0,0,0.03)"
                         }}

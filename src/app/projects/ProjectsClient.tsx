@@ -84,7 +84,7 @@ export default function ProjectsClient({ initialProjects, settings }: { initialP
                                     whileInView={{ opacity: 1, scale: 1 }}
                                     viewport={{ once: true }}
                                     exit={{ opacity: 0, scale: 0.95 }}
-                                    transition={{ duration: 0.8, ease: "var(--ease-expo)", delay: i * 0.05 }}
+                                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: i * 0.05 }}
                                     style={{ 
                                         gridColumn: isFeatured ? "1 / -1" : "auto",
                                         maxWidth: isFeatured ? "1000px" : "100%",
@@ -106,7 +106,7 @@ export default function ProjectsClient({ initialProjects, settings }: { initialP
                                             }}>
                                                 <motion.img 
                                                     whileHover={{ scale: 1.04 }}
-                                                    transition={{ duration: 1.2, ease: "var(--ease-expo)" }}
+                                                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                                                     src={p.heroImg} 
                                                     style={{ width: "100%", height: "100%", objectFit: "cover" }} 
                                                 />
