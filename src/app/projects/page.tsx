@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
     let projectList: any[] = [];
-    let settings = null;
+    let settings: any = null;
 
     try {
         projectList = await prisma.project.findMany({

@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export default async function StudioPage() {
-    let settings = null;
+    let settings: any = null;
     try {
         // @ts-ignore
         if (prisma.siteSettings) {
