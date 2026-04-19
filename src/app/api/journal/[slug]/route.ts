@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(req: Request, { params }: { params: { slug: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
     try {
+        const { slug } = await params;
         const entry = await prisma.journal.findUnique({
-            where: { slug: params.slug },
+            where: { slug },
         });
         if (!entry) return NextResponse.json({ error: "Not found" }, { status: 404 });
         return NextResponse.json(entry);
@@ -13,11 +14,12 @@ export async function GET(req: Request, { params }: { params: { slug: string } }
     }
 }
 
-export async function PUT(req: Request, { params }: { params: { slug: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ slug: string }> }) {
     try {
+        const { slug } = await params;
         const body = await req.json();
         const entry = await prisma.journal.update({
-            where: { slug: params.slug },
+            where: { slug },
             data: body,
         });
         return NextResponse.json(entry);
@@ -26,10 +28,11 @@ export async function PUT(req: Request, { params }: { params: { slug: string } }
     }
 }
 
-export async function DELETE(req: Request, { params }: { params: { slug: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ slug: string }> }) {
     try {
+        const { slug } = await params;
         await prisma.journal.delete({
-            where: { slug: params.slug },
+            where: { slug },
         });
         return NextResponse.json({ success: true });
     } catch (error) {
