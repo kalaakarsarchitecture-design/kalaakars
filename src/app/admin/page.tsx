@@ -687,12 +687,6 @@ export default function AdminPage() {
         else showToast("Update failed", "err");
     };
 
-    const filtered = projects.filter(p => {
-        const q = search.toLowerCase();
-        const matchSearch = !q || p.title.toLowerCase().includes(q) || p.location.toLowerCase().includes(q) || p.slug.toLowerCase().includes(q);
-        const matchCat = filterCat === "ALL" || p.category === filterCat;
-        return matchSearch && matchCat;
-    });
 
     /* ── LOGIN ── */
     if (!authed) {
