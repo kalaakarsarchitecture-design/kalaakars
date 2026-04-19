@@ -320,7 +320,7 @@ export default function HomeClient({ initialProjects, initialSettings }: { initi
             HERO — Split-screen (desktop) / Stacked (mobile)
         ══════════════════════════════════════ */}
         {/* ── PREMIUM MOBILE LAYOUT ── */}
-        <div className="mobile-flex" style={{ minHeight: "100svh", flexDirection: "column", background: "#0a0a0a", width: "100%" }}>
+        <div className="mobile-flex" style={{ height: "100svh", overflow: "hidden", flexDirection: "column", background: "#0a0a0a", width: "100%" }}>
 
           {/* Mobile: Full-bleed hero — tall, cinematic */}
           <div style={{ position: "relative", height: "78svh", flexShrink: 0, overflow: "hidden" }}>
@@ -421,7 +421,7 @@ export default function HomeClient({ initialProjects, initialSettings }: { initi
             </div>
 
             {/* Mobile: Project list — premium dark style */}
-            <div style={{ flex: 1, background: "#0a0a0a" }}>
+            <div style={{ flex: 1, background: "#0a0a0a", overflowY: "auto", overflowX: "hidden" }}>
 
               {/* Section header */}
               <div style={{ padding: "24px 22px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
