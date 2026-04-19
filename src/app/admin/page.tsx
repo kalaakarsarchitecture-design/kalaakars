@@ -594,7 +594,6 @@ export default function AdminPage() {
     const [journal, setJournal] = useState<JournalEntry[]>([]);
     const [settings, setSettings] = useState<SiteSettings | null>(null);
 
-    const [loading, setLoading] = useState(false);
     const [tab, setTab] = useState<"projects" | "journal" | "settings">("projects");
     const [view, setView] = useState<"list" | "form">("list");
     
@@ -607,23 +606,17 @@ export default function AdminPage() {
     const [deleteTargetEntry, setDeleteTargetEntry] = useState<JournalEntry | null>(null);
 
     const [toast, setToast] = useState<{ msg: string; type: "ok" | "err" } | null>(null);
-    const [search, setSearch] = useState("");
-    const [filterCat, setFilterCat] = useState("ALL");
 
     const showToast = (msg: string, type: "ok" | "err" = "ok") => setToast({ msg, type });
 
     const fetchProjects = useCallback(async () => {
-        setLoading(true);
         const res = await fetch("/api/projects");
         if (res.ok) setProjects(await res.json());
-        setLoading(false);
     }, []);
 
     const fetchJournal = useCallback(async () => {
-        setLoading(true);
         const res = await fetch("/api/journal");
         if (res.ok) setJournal(await res.json());
-        setLoading(false);
     }, []);
 
     const fetchSettings = useCallback(async () => {
@@ -871,10 +864,13 @@ export default function AdminPage() {
                 </main>
             </div>
 
-            {/* Delete modal */}
+            {/* Delete modals */}
             <AnimatePresence>
                 {deleteTarget && (
                     <DeleteModal title={deleteTarget.title} onConfirm={() => handleDelete(deleteTarget)} onCancel={() => setDeleteTarget(null)} />
+                )}
+                {deleteTargetEntry && (
+                    <DeleteModal title={deleteTargetEntry.title} onConfirm={() => handleDeleteEntry(deleteTargetEntry)} onCancel={() => setDeleteTargetEntry(null)} />
                 )}
             </AnimatePresence>
 

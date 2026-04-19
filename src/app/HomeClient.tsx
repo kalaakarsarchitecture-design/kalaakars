@@ -18,11 +18,6 @@ function NavOverlay({ open, onClose, settings }: { open: boolean; onClose: () =>
     { label: "Journal", href: "/journal", num: "04" },
   ];
 
-  const upcoming = [
-    { title: "Coastal Research Lab", year: "2025" },
-    { title: "Wayanad Wellness Retreat", year: "2025" },
-  ];
-
   return (
     <AnimatePresence>
       {open && (
