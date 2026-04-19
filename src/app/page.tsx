@@ -16,5 +16,9 @@ export default async function Page() {
         pull_quote: p.pullQuote,
     }));
 
-    return <HomeClient initialProjects={mapped} />;
+    const settings = await prisma.siteSettings.findUnique({
+        where: { id: "global" },
+    });
+
+    return <HomeClient initialProjects={mapped} initialSettings={settings} />;
 }

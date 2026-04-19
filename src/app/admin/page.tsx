@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 /* ═══════════════════════════════════════
    TYPES
@@ -22,6 +23,27 @@ interface Project {
     gallery?: GalleryImage[];
     gallery_images?: GalleryImage[];
     specs?: Spec[];
+}
+
+interface JournalEntry {
+    id?: string;
+    slug: string;
+    title: string;
+    date: string;
+    category: string;
+    heroImg: string;
+    content: string;
+    readTime?: string;
+    excerpt?: string;
+}
+
+interface SiteSettings {
+    phone: string;
+    email: string;
+    address: string;
+    yearsExp: string;
+    instagram?: string;
+    linkedin?: string;
 }
 
 const EMPTY_PROJECT: Project = {
@@ -68,15 +90,55 @@ function ImageInput({
         cursor: "pointer",
     });
 
+    const resizeImage = (file: File, maxWidth = 2000): Promise<Blob> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target?.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = (maxWidth / width) * height;
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext("2d");
+                    ctx?.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        if (blob) resolve(blob);
+                        else reject(new Error("Canvas toBlob failed"));
+                    }, "image/jpeg", 0.9);
+                };
+            };
+            reader.onerror = reject;
+        });
+    };
+
     const upload = async (file: File) => {
         if (!file) return;
         setUploading(true);
-        const fd = new FormData();
-        fd.append("file", file);
-        const res = await fetch("/api/upload", { method: "POST", body: fd });
-        const json = await res.json();
-        if (json.url) onChange(json.url);
-        else alert(json.error ?? "Upload failed");
+        try {
+            // Process image: limit dimensions and compress
+            const processedBlob = await resizeImage(file);
+            const fd = new FormData();
+            fd.append("file", processedBlob, "upload.jpg");
+            
+            const res = await fetch("/api/upload", { method: "POST", body: fd });
+            const json = await res.json();
+            if (json.url) onChange(json.url);
+            else alert(json.error ?? "Upload failed");
+        } catch (err) {
+            console.error("Upload process error:", err);
+            alert("Image processing failed");
+        }
         setUploading(false);
     };
 
@@ -433,6 +495,80 @@ function ProjectForm({
     );
 }
 
+const EMPTY_JOURNAL: JournalEntry = {
+    slug: "", title: "", date: new Date().toLocaleDateString('en-GB'), 
+    category: "ESSAY", heroImg: "", content: "", readTime: "5 MIN", excerpt: ""
+};
+
+/* ═══════════════════════════════════════
+   JOURNAL FORM
+═══════════════════════════════════════ */
+function JournalForm({ initial, onSave, onCancel }: { initial: JournalEntry; onSave: (j: JournalEntry) => Promise<void>; onCancel: () => void; }) {
+    const [form, setForm] = useState<JournalEntry>(initial);
+    const [saving, setSaving] = useState(false);
+    const set = (k: keyof JournalEntry, v: any) => setForm(f => ({ ...f, [k]: v }));
+
+    const inputStyle: React.CSSProperties = { width: "100%", background: "#111", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", padding: "11px 14px", fontFamily: "var(--font-sans)", fontSize: "0.85rem", outline: "none" };
+    const labelStyle: React.CSSProperties = { display: "block", fontFamily: "var(--font-mono)", fontSize: "0.5rem", letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)", marginBottom: "6px" };
+
+    return (
+        <form onSubmit={async e => { e.preventDefault(); setSaving(true); await onSave(form); setSaving(false); }} style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+            <div style={{ padding: "24px 32px", borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h2 style={{ fontFamily: "var(--font-sans)", fontSize: "1.3rem" }}>{initial.slug ? "EDIT ENTRY" : "NEW JOURNAL ENTRY"}</h2>
+                <div style={{ display: "flex", gap: "12px" }}>
+                    <button type="button" onClick={onCancel} style={{ padding: "10px 20px", background: "none", border: "1px solid #333", color: "#666", cursor: "pointer", fontSize: "0.6rem" }}>CANCEL</button>
+                    <button type="submit" style={{ padding: "10px 24px", background: "#D4A520", border: "none", color: "#000", fontWeight: 700, cursor: "pointer", fontSize: "0.6rem" }}>{saving ? "SAVING…" : "SAVE ENTRY"}</button>
+                </div>
+            </div>
+            <div style={{ flex: 1, overflowY: "auto", padding: "32px", display: "flex", flexDirection: "column", gap: "24px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                    <div><label style={labelStyle}>TITLE</label><input value={form.title} placeholder="The future of tropical design" onChange={e => set("title", e.target.value)} style={inputStyle} required /></div>
+                    <div><label style={labelStyle}>SLUG</label><input value={form.slug} placeholder="future-of-tropical-design" onChange={e => set("slug", e.target.value)} style={inputStyle} required /></div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
+                    <div><label style={labelStyle}>DATE</label><input value={form.date} onChange={e => set("date", e.target.value)} style={inputStyle} /></div>
+                    <div><label style={labelStyle}>CATEGORY</label><input value={form.category} onChange={e => set("category", e.target.value)} style={inputStyle} /></div>
+                    <div><label style={labelStyle}>READ TIME</label><input value={form.readTime} onChange={e => set("readTime", e.target.value)} style={inputStyle} /></div>
+                </div>
+                <div><label style={labelStyle}>HERO IMAGE</label><ImageInput value={form.heroImg} onChange={url => set("heroImg", url)} /></div>
+                <div><label style={labelStyle}>EXCERPT</label><textarea value={form.excerpt} placeholder="Brief summary of the article..." onChange={e => set("excerpt", e.target.value)} style={{ ...inputStyle, resize: "none" }} rows={2} /></div>
+                <div style={{ flex: 1 }}><label style={labelStyle}>CONTENT (Markdown supported)</label><textarea value={form.content} onChange={e => set("content", e.target.value)} style={{ ...inputStyle, resize: "vertical", minHeight: "300px" }} /></div>
+            </div>
+        </form>
+    );
+}
+
+/* ═══════════════════════════════════════
+   SETTINGS FORM
+═══════════════════════════════════════ */
+function SettingsForm({ initial, onSave }: { initial: SiteSettings; onSave: (s: SiteSettings) => Promise<void>; }) {
+    const [form, setForm] = useState<SiteSettings>(initial);
+    const [saving, setSaving] = useState(false);
+    const set = (k: keyof SiteSettings, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+    const inputStyle: React.CSSProperties = { width: "100%", background: "#111", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", padding: "14px", fontSize: "0.9rem", outline: "none" };
+    const labelStyle: React.CSSProperties = { display: "block", fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", marginBottom: "8px" };
+
+    return (
+        <form onSubmit={async e => { e.preventDefault(); setSaving(true); await onSave(form); setSaving(false); }} style={{ padding: "40px", maxWidth: "800px" }}>
+            <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "2rem", marginBottom: "40px" }}>Global Site Settings</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                <div><label style={labelStyle}>PHONE NUMBER</label><input value={form.phone} onChange={e => set("phone", e.target.value)} style={inputStyle} /></div>
+                <div><label style={labelStyle}>EMAIL ADDRESS</label><input value={form.email} onChange={e => set("email", e.target.value)} style={inputStyle} /></div>
+                <div><label style={labelStyle}>OFFICE ADDRESS</label><textarea value={form.address} onChange={e => set("address", e.target.value)} style={{ ...inputStyle, resize: "none" }} rows={3} /></div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+                    <div><label style={labelStyle}>INSTAGRAM URL</label><input value={form.instagram} onChange={e => set("instagram", e.target.value)} style={inputStyle} /></div>
+                    <div><label style={labelStyle}>LINKEDIN URL</label><input value={form.linkedin} onChange={e => set("linkedin", e.target.value)} style={inputStyle} /></div>
+                </div>
+                <div><label style={labelStyle}>YEARS OF EXPERIENCE</label><input value={form.yearsExp} onChange={e => set("yearsExp", e.target.value)} style={inputStyle} placeholder="e.g. 8" /></div>
+                <button type="submit" style={{ padding: "16px", background: "#D4A520", color: "#000", fontWeight: 700, cursor: "pointer", border: "none", marginTop: "20px" }}>
+                    {saving ? "UPDATING…" : "UPDATE SETTINGS"}
+                </button>
+            </div>
+        </form>
+    );
+}
+
 /* ═══════════════════════════════════════
    STAT CARD
 ═══════════════════════════════════════ */
@@ -449,15 +585,27 @@ function StatCard({ label, value, accent }: { label: string; value: string | num
    MAIN ADMIN PAGE
 ═══════════════════════════════════════ */
 export default function AdminPage() {
+    const isMobile = useIsMobile();
     const [authed, setAuthed] = useState(false);
     const [pw, setPw] = useState("");
     const [pwError, setPwError] = useState(false);
 
     const [projects, setProjects] = useState<Project[]>([]);
+    const [journal, setJournal] = useState<JournalEntry[]>([]);
+    const [settings, setSettings] = useState<SiteSettings | null>(null);
+
     const [loading, setLoading] = useState(false);
+    const [tab, setTab] = useState<"projects" | "journal" | "settings">("projects");
     const [view, setView] = useState<"list" | "form">("list");
+    
+    // For Projects
     const [editing, setEditing] = useState<Project | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
+
+    // For Journal
+    const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
+    const [deleteTargetEntry, setDeleteTargetEntry] = useState<JournalEntry | null>(null);
+
     const [toast, setToast] = useState<{ msg: string; type: "ok" | "err" } | null>(null);
     const [search, setSearch] = useState("");
     const [filterCat, setFilterCat] = useState("ALL");
@@ -471,7 +619,25 @@ export default function AdminPage() {
         setLoading(false);
     }, []);
 
-    useEffect(() => { if (authed) fetchProjects(); }, [authed, fetchProjects]);
+    const fetchJournal = useCallback(async () => {
+        setLoading(true);
+        const res = await fetch("/api/journal");
+        if (res.ok) setJournal(await res.json());
+        setLoading(false);
+    }, []);
+
+    const fetchSettings = useCallback(async () => {
+        const res = await fetch("/api/settings");
+        if (res.ok) setSettings(await res.json());
+    }, []);
+
+    useEffect(() => { 
+        if (authed) {
+            fetchProjects(); 
+            fetchJournal();
+            fetchSettings();
+        } 
+    }, [authed, fetchProjects, fetchJournal, fetchSettings]);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
@@ -499,6 +665,33 @@ export default function AdminPage() {
         if (res.ok) { showToast("Project deleted"); fetchProjects(); }
         else showToast("Delete failed", "err");
         setDeleteTarget(null);
+    };
+
+    const handleSaveEntry = async (j: JournalEntry) => {
+        const isEdit = !!editingEntry?.slug;
+        const url = isEdit ? `/api/journal/${editingEntry?.slug}` : "/api/journal";
+        const method = isEdit ? "PUT" : "POST";
+        const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(j) });
+        if (res.ok) {
+            showToast(isEdit ? "Entry updated ✓" : "Entry created ✓");
+            setView("list");
+            fetchJournal();
+        } else {
+            showToast("Save failed", "err");
+        }
+    };
+
+    const handleDeleteEntry = async (j: JournalEntry) => {
+        const res = await fetch(`/api/journal/${j.slug}`, { method: "DELETE" });
+        if (res.ok) { showToast("Entry deleted"); fetchJournal(); }
+        else showToast("Delete failed", "err");
+        setDeleteTargetEntry(null);
+    };
+
+    const handleSaveSettings = async (s: SiteSettings) => {
+        const res = await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(s) });
+        if (res.ok) showToast("Settings updated ✓");
+        else showToast("Update failed", "err");
     };
 
     const filtered = projects.filter(p => {
@@ -545,30 +738,56 @@ export default function AdminPage() {
         <div style={{ minHeight: "100vh", background: "#090909", color: "#fff", display: "flex", flexDirection: "column" }}>
 
             {/* Top Nav */}
-            <header style={{ height: "60px", borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 32px", flexShrink: 0, background: "#0c0c0c" }}>
+            <header style={{ height: isMobile ? "auto" : "60px", borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between", padding: isMobile ? "20px" : "0 32px", flexShrink: 0, background: "#0c0c0c", gap: isMobile ? "16px" : "0" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/logo.svg" alt="K" style={{ width: "18px", height: "22px", filter: "brightness(0) invert(1)", objectFit: "contain" }} />
                     <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.75rem", letterSpacing: "0.18em", color: "#fff" }}>KALAAKARS</span>
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em" }}>/ ADMIN CMS</span>
+                    {!isMobile && <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em" }}>/ ADMIN CMS</span>}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "20px", width: isMobile ? "100%" : "auto", justifyContent: "space-between" }}>
                     <a href="/" target="_blank" rel="noreferrer" style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", textDecoration: "none", border: "1px solid rgba(255,255,255,0.12)", padding: "5px 12px" }}>VIEW SITE ↗</a>
                     <button onClick={() => setAuthed(false)} style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.12em", background: "none", border: "none", cursor: "pointer" }}>SIGN OUT</button>
                 </div>
             </header>
 
-            <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+            <div style={{ flex: 1, display: "flex", flexDirection: isMobile ? "column" : "row", overflow: "hidden" }}>
 
-                {/* Sidebar */}
-                <aside style={{ width: "220px", borderRight: "1px solid rgba(255,255,255,0.07)", padding: "28px 0", display: "flex", flexDirection: "column", gap: "4px", flexShrink: 0, background: "#0c0c0c" }}>
-                    <button style={{ display: "flex", alignItems: "center", gap: "12px", padding: "11px 28px", background: "rgba(212,165,32,0.08)", border: "none", borderLeft: "2px solid #D4A520", cursor: "pointer", width: "100%" }}>
-                        <span style={{ color: "#D4A520", fontSize: "1rem" }}>◈</span>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.1em", color: "#fff" }}>Projects</span>
-                    </button>
+                {/* Sidebar / Mobile Nav */}
+                <aside style={{ 
+                    width: isMobile ? "100%" : "220px", 
+                    height: isMobile ? "auto" : "auto",
+                    borderRight: isMobile ? "none" : "1px solid rgba(255,255,255,0.07)", 
+                    borderBottom: isMobile ? "1px solid rgba(255,255,255,0.07)" : "none",
+                    padding: isMobile ? "0" : "28px 0", 
+                    display: "flex", 
+                    flexDirection: isMobile ? "row" : "column", 
+                    gap: isMobile ? "0" : "4px", 
+                    flexShrink: 0, 
+                    background: "#0c0c0c" 
+                }}>
+                    {[
+                        { id: "projects", label: "Projects", icon: "◈" },
+                        { id: "journal", label: "Journal", icon: "✎" },
+                        { id: "settings", label: "Settings", icon: "⚙" }
+                    ].map(nav => (
+                        <button 
+                            key={nav.id}
+                            onClick={() => { setTab(nav.id as any); setView("list"); }}
+                            style={{ 
+                                display: "flex", alignItems: "center", gap: "12px", padding: "11px 28px", 
+                                background: tab === nav.id ? "rgba(212,165,32,0.08)" : "transparent", 
+                                border: "none", borderLeft: tab === nav.id ? "2px solid #D4A520" : "2px solid transparent", 
+                                cursor: "pointer", width: "100%", textAlign: "left"
+                            }}
+                        >
+                            <span style={{ color: tab === nav.id ? "#D4A520" : "#444", fontSize: "1rem" }}>{nav.icon}</span>
+                            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.1em", color: tab === nav.id ? "#fff" : "rgba(255,255,255,0.4)" }}>{nav.label}</span>
+                        </button>
+                    ))}
                     <div style={{ marginTop: "auto", padding: "24px 28px", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
                         <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.48rem", color: "rgba(255,255,255,0.2)", letterSpacing: "0.1em", lineHeight: 1.8 }}>
-                            KALAAKARS CMS<br />CALICUT · KERALA<br />EST. 2019
+                            KALAAKARS CMS<br />MALAPPURAM · KERALA<br />LEGACY OF 8 YEARS
                         </p>
                     </div>
                 </aside>
@@ -576,100 +795,76 @@ export default function AdminPage() {
                 {/* Main */}
                 <main style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
                     <AnimatePresence mode="wait">
-                        {view === "form" ? (
-                            <motion.div key="form" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                                <ProjectForm
-                                    initial={editing ?? EMPTY_PROJECT}
-                                    onSave={handleSave}
-                                    onCancel={() => { setView("list"); setEditing(null); }}
-                                />
-                            </motion.div>
-                        ) : (
-                            <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-
-                                {/* List header */}
-                                <div style={{ padding: "28px 32px 24px", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
-                                        <div>
-                                            <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", letterSpacing: "0.2em", color: "#D4A520", marginBottom: "6px" }}>PROJECTS MANAGER</p>
-                                            <h1 style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "1.8rem", letterSpacing: "-0.04em", color: "#fff" }}>All Projects</h1>
+                        {tab === "projects" && (
+                            <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                                {view === "form" ? (
+                                    <ProjectForm 
+                                        initial={editing ?? EMPTY_PROJECT} 
+                                        onSave={handleSave} 
+                                        onCancel={() => { setView("list"); setEditing(null); }} 
+                                    />
+                                ) : (
+                                    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                                        <div style={{ padding: isMobile ? "20px" : "32px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: isMobile ? "column" : "row", gap: "20px" }}>
+                                            <h1 style={{ fontFamily: "var(--font-sans)", fontSize: isMobile ? "1.4rem" : "1.8rem", fontWeight: 300 }}>Studio Projects</h1>
+                                            <button onClick={() => { setEditing(null); setView("form"); }} style={{ padding: "12px 24px", background: "#D4A520", color: "#000", fontWeight: 700, border: "none", cursor: "pointer", fontSize: "0.6rem", width: isMobile ? "100%" : "auto" }}>+ NEW PROJECT</button>
                                         </div>
-                                        <button onClick={() => { setEditing(null); setView("form"); }}
-                                            style={{ padding: "12px 24px", background: "#D4A520", border: "none", color: "#000", fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.12em", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", marginTop: "4px" }}>
-                                            + NEW PROJECT
-                                        </button>
-                                    </div>
-
-                                    {/* Stats */}
-                                    <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
-                                        <StatCard label="TOTAL PROJECTS" value={projects.length} accent />
-                                        <StatCard label="RESIDENTIAL" value={projects.filter(p => p.category === "RESIDENTIAL").length} />
-                                        <StatCard label="COMMERCIAL" value={projects.filter(p => p.category === "COMMERCIAL").length} />
-                                        <StatCard label="CULTURAL" value={projects.filter(p => p.category === "CULTURAL").length} />
-                                    </div>
-
-                                    {/* Search + filter */}
-                                    <div style={{ display: "flex", gap: "12px" }}>
-                                        <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search projects…"
-                                            style={{ flex: 1, background: "#111", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", padding: "10px 14px", fontFamily: "var(--font-sans)", fontSize: "0.8rem", outline: "none" }} />
-                                        <select value={filterCat} onChange={e => setFilterCat(e.target.value)}
-                                            style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)", padding: "10px 14px", fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.1em", outline: "none", appearance: "none" }}>
-                                            <option value="ALL">ALL CATEGORIES</option>
-                                            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Table */}
-                                <div style={{ flex: 1, overflowY: "auto" }}>
-                                    {loading ? (
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px" }}>
-                                            <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em" }}>LOADING…</p>
+                                        <div style={{ padding: isMobile ? "20px" : "32px", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: "16px", background: "#0b0b0b" }}>
+                                            <StatCard label="TOTAL WORKS" value={projects.length} />
+                                            <StatCard label="CATEGORIES" value={new Set(projects.map(p => p.category)).size} />
+                                            <StatCard label="LATEST" value={projects[0]?.year || "N/A"} accent />
+                                            <StatCard label="STATUS" value="LIVE" />
                                         </div>
-                                    ) : filtered.length === 0 ? (
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px", flexDirection: "column", gap: "12px" }}>
-                                            <p style={{ fontFamily: "var(--font-sans)", fontSize: "1.2rem", color: "rgba(255,255,255,0.3)" }}>No projects found</p>
-                                            <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(255,255,255,0.2)", letterSpacing: "0.1em" }}>Adjust your search or create a new project</p>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div style={{ display: "grid", gridTemplateColumns: "48px 1fr 120px 100px 80px 120px", padding: "12px 32px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                                                {["#", "TITLE", "CATEGORY", "LOCATION", "YEAR", "ACTIONS"].map(h => (
-                                                    <span key={h} style={{ fontFamily: "var(--font-mono)", fontSize: "0.48rem", letterSpacing: "0.18em", color: "rgba(255,255,255,0.25)" }}>{h}</span>
-                                                ))}
-                                            </div>
-                                            {filtered.map((p, i) => (
-                                                <motion.div key={p.id ?? p.slug} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                                                    style={{ display: "grid", gridTemplateColumns: "48px 1fr 120px 100px 80px 120px", padding: "18px 32px", borderBottom: "1px solid rgba(255,255,255,0.05)", alignItems: "center" }}>
-                                                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>{p.num}</span>
-                                                    <div style={{ display: "flex", alignItems: "center", gap: "16px", minWidth: 0 }}>
-                                                        {p.hero_img && (
-                                                            <div style={{ width: "48px", height: "36px", borderRadius: "2px", overflow: "hidden", flexShrink: 0 }}>
-                                                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                                <img src={p.hero_img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                                                            </div>
-                                                        )}
-                                                        <div style={{ minWidth: 0 }}>
-                                                            <p style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "0.9rem", color: "#fff", letterSpacing: "-0.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                                                {p.title.split(" ").map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
-                                                            </p>
-                                                            <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.48rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.08em", marginTop: "2px" }}>/{p.slug}</p>
-                                                        </div>
+                                        <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "20px" : "32px" }}>
+                                            {projects.map(p => (
+                                                <div key={p.slug} style={{ display: "flex", justifyContent: "space-between", padding: "20px 0", borderBottom: "1px solid rgba(255,255,255,0.05)", alignItems: "center", gap: "16px" }}>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.title}</p>
+                                                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.3)", marginTop: "4px" }}>{p.category} · {p.location}</p>
                                                     </div>
-                                                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)" }}>{p.category}</span>
-                                                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", letterSpacing: "0.07em", color: "rgba(255,255,255,0.35)" }}>{p.location}</span>
-                                                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(255,255,255,0.5)" }}>{p.year}</span>
                                                     <div style={{ display: "flex", gap: "8px" }}>
-                                                        <button onClick={() => { setEditing(p); setView("form"); }}
-                                                            style={{ padding: "6px 12px", background: "transparent", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-mono)", fontSize: "0.48rem", letterSpacing: "0.1em", cursor: "pointer" }}>EDIT</button>
-                                                        <button onClick={() => setDeleteTarget(p)}
-                                                            style={{ padding: "6px 12px", background: "transparent", border: "1px solid rgba(220,50,50,0.3)", color: "rgba(220,50,50,0.7)", fontFamily: "var(--font-mono)", fontSize: "0.48rem", letterSpacing: "0.1em", cursor: "pointer" }}>DEL</button>
+                                                        <button onClick={() => { setEditing(p); setView("form"); }} style={{ padding: "8px 14px", background: "none", border: "1px solid #333", color: "#fff", cursor: "pointer", fontSize: "0.55rem", fontFamily: "var(--font-mono)" }}>EDIT</button>
+                                                        <button onClick={() => setDeleteTarget(p)} style={{ padding: "8px 14px", background: "none", border: "1px solid rgba(220,50,50,0.2)", color: "#dc3232", cursor: "pointer", fontSize: "0.55rem", fontFamily: "var(--font-mono)" }}>DEL</button>
                                                     </div>
-                                                </motion.div>
+                                                </div>
                                             ))}
-                                        </>
-                                    )}
-                                </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+                        )}
+                        {tab === "journal" && (
+                            <motion.div key="journal" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                                {view === "form" ? (
+                                    <JournalForm 
+                                        initial={editingEntry ?? EMPTY_JOURNAL} 
+                                        onSave={handleSaveEntry} 
+                                        onCancel={() => { setView("list"); setEditingEntry(null); }} 
+                                    />
+                                ) : (
+                                    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                                        <div style={{ padding: "32px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                            <h1 style={{ fontFamily: "var(--font-sans)", fontSize: "1.8rem", fontWeight: 300 }}>Architectural Journal</h1>
+                                            <button onClick={() => { setEditingEntry(null); setView("form"); }} style={{ padding: "12px 24px", background: "#D4A520", color: "#000", fontWeight: 700, border: "none", cursor: "pointer", fontSize: "0.6rem" }}>+ NEW ENTRY</button>
+                                        </div>
+                                        <div style={{ flex: 1, overflowY: "auto", padding: "32px" }}>
+                                            {journal.map(j => (
+                                                <div key={j.slug} style={{ display: "flex", justifyContent: "space-between", padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.05)", alignItems: "center" }}>
+                                                    <span>{j.title}</span>
+                                                    <div style={{ display: "flex", gap: "8px" }}>
+                                                        <button onClick={() => { setEditingEntry(j); setView("form"); }} style={{ padding: "6px 10px", background: "none", border: "1px solid #333", color: "#999", cursor: "pointer", fontSize: "0.5rem" }}>EDIT</button>
+                                                        <button onClick={() => setDeleteTargetEntry(j)} style={{ padding: "6px 10px", background: "none", border: "1px solid #422", color: "#dc3232", cursor: "pointer", fontSize: "0.5rem" }}>DEL</button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+                        )}
+                        {tab === "settings" && settings && (
+                            <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, overflowY: "auto" }}>
+                                <SettingsForm initial={settings} onSave={handleSaveSettings} />
                             </motion.div>
                         )}
                     </AnimatePresence>

@@ -125,16 +125,20 @@ values (
 on conflict (id) do nothing;
 
 -- Allow anyone to read (bucket is public)
+drop policy if exists "Public read project-images" on storage.objects;
 create policy "Public read project-images"
   on storage.objects for select
   using ( bucket_id = 'project-images' );
 
 -- Allow service-role (our server) to upload
+drop policy if exists "Service upload project-images" on storage.objects;
 create policy "Service upload project-images"
   on storage.objects for insert
   with check ( bucket_id = 'project-images' );
 
 -- Allow service-role to delete
+drop policy if exists "Service delete project-images" on storage.objects;
 create policy "Service delete project-images"
   on storage.objects for delete
   using ( bucket_id = 'project-images' );
+

@@ -1,18 +1,11 @@
 import { NextResponse } from "next/server";
-import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 const MAX_MB = 10;
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
+const BUCKET_NAME = "project-images";
 
 export async function POST(req: Request) {
-    // Configure Cloudinary inside the handler to ensure environment variables are loaded
-    cloudinary.config({
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-        api_key: process.env.CLOUDINARY_API_KEY,
-        api_secret: process.env.CLOUDINARY_API_SECRET,
-        secure: true,
-    });
-
     let formData: FormData;
     try {
         formData = await req.formData();
@@ -25,15 +18,6 @@ export async function POST(req: Request) {
 
     if (!file) {
         return NextResponse.json({ error: "No file provided" }, { status: 400 });
-    }
-
-    // Ensure Cloudinary is actually configured
-    if (!process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME === "your_cloud_name") {
-        console.error("Cloudinary config missing. Found:", process.env.CLOUDINARY_CLOUD_NAME);
-        return NextResponse.json(
-            { error: "Cloudinary is not configured in .env.local yet." },
-            { status: 500 }
-        );
     }
 
     // Validate type
@@ -56,43 +40,40 @@ export async function POST(req: Request) {
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        // Promise wrapper for Cloudinary stream upload
-        const uploadToCloudinary = () => {
-            return new Promise<UploadApiResponse>((resolve, reject) => {
-                const uploadStream = cloudinary.uploader.upload_stream(
-                    {
-                        folder: "kalaakars",
-                        resource_type: "auto", // Allow automatic detection of resource type
-                        format: "webp", 
-                        quality: "auto",
-                    },
-                    (error, result) => {
-                        if (error) {
-                            console.error("Cloudinary stream error:", error);
-                            reject(error);
-                        } else if (!result) {
-                            reject(new Error("Cloudinary upload resulted in empty response"));
-                        } else {
-                            resolve(result);
-                        }
-                    }
-                );
+        // Create a unique filename
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+        const filePath = `uploads/${fileName}`;
 
-                uploadStream.end(buffer);
+        console.log(`Uploading file to Supabase Storage: ${fileName} (${file.type}), size: ${file.size}`);
+
+        const { data, error } = await supabaseAdmin.storage
+            .from(BUCKET_NAME)
+            .upload(filePath, buffer, {
+                contentType: file.type,
+                upsert: false
             });
-        };
 
-        console.log(`Uploading file to Cloudinary: ${file.name} (${file.type}), size: ${file.size}`);
-        const uploadResult = await uploadToCloudinary();
-        console.log("Cloudinary Upload Success:", uploadResult.secure_url);
+        if (error) {
+            console.error("Supabase Storage error:", error);
+            throw error;
+        }
 
-        return NextResponse.json({ url: uploadResult.secure_url });
+        // Get public URL
+        const { data: { publicUrl } } = supabaseAdmin.storage
+            .from(BUCKET_NAME)
+            .getPublicUrl(filePath);
+
+        console.log("Supabase Upload Success:", publicUrl);
+
+        return NextResponse.json({ url: publicUrl });
     } catch (error: any) {
-        console.error("Cloudinary Upload Exception:", error);
+        console.error("Supabase Upload Exception:", error);
         return NextResponse.json(
-            { error: error?.message || (typeof error === 'string' ? error : "Cloudinary upload failed") },
+            { error: error?.message || "Supabase upload failed" },
             { status: 500 }
         );
     }
 }
+
 

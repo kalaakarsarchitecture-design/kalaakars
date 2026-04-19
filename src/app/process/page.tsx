@@ -70,8 +70,8 @@ export default function ProcessPage() {
             {/* Header */}
             <section style={{ padding: pad, borderBottom: "1px solid var(--border)" }}>
                 <p className="u-label" style={{ marginBottom: "24px", color: "var(--accent)" }}>The Studio Method</p>
-                <h1 style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(2.5rem, 8vw, 6.5rem)", letterSpacing: "-0.04em", lineHeight: 0.9, maxWidth: "1000px" }}>
-                    TRANSLATING<br />VISION INTO<br />VITAL STRUCTURE
+                <h1 style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "clamp(3.5rem, 9vw, 8rem)", letterSpacing: "-0.04em", lineHeight: 0.85, maxWidth: "1000px" }}>
+                    Translating<br />Vision Into<br />Vital Structure
                 </h1>
                 <p style={{ fontFamily: "var(--font-sans)", fontSize: "1.2rem", fontWeight: 300, color: "#666", marginTop: "48px", maxWidth: "600px", lineHeight: 1.6 }}>
                     Our process is iterative, rigorous, and deeply rooted in the physical reality of the Malabar coast.
@@ -93,7 +93,7 @@ export default function ProcessPage() {
                                 <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.8rem", color: "var(--accent)" }}>{p.step}</span>
                                 <span className="u-label" style={{ fontSize: "0.5rem", color: "#bbb" }}> Est. {p.duration}</span>
                             </div>
-                            <h3 style={{ fontFamily: "var(--font-sans)", fontSize: "1.6rem", fontWeight: 400, marginBottom: "16px" }}>{p.title}</h3>
+                            <h3 style={{ fontFamily: "var(--font-serif)", fontSize: "2rem", fontWeight: 400, marginBottom: "16px", letterSpacing: "-0.02em" }}>{p.title}</h3>
                             <p style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", lineHeight: 1.7, color: "#555" }}>{p.desc}</p>
                         </motion.div>
                     ))}

@@ -12,63 +12,38 @@ export const Marquee = ({ text, reverse = false }: MarqueeProps) => {
         <div style={{
             overflow: "hidden",
             whiteSpace: "nowrap",
-            borderTop: "1px solid rgba(255,255,255,0.05)",
-            borderBottom: "1px solid rgba(255,255,255,0.05)",
-            padding: "20px 0",
-            background: "#050505",
+            borderTop: "1px solid var(--border)",
+            borderBottom: "1px solid var(--border)",
+            padding: "32px 0",
+            background: "var(--bg)",
             position: "relative",
             zIndex: 5
         }}>
             <motion.div
-                animate={{ x: reverse ? [0, 1000] : [0, -1000] }}
+                animate={{ x: reverse ? ["-50%", "0%"] : ["0%", "-50%"] }}
                 transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                style={{ display: "inline-block" }}
+                style={{ display: "flex", width: "fit-content" }}
             >
-                <div style={{ display: "flex", gap: "60px", alignItems: "center" }}>
-                    {[...Array(6)].map((_, i) => (
-                        <React.Fragment key={i}>
-                            <span
-                                className="glitch-text"
-                                data-text={text}
-                                style={{
-                                    fontFamily: "var(--font-display)",
-                                    fontSize: "3rem",
-                                    color: "var(--text-primary)",
-                                    fontWeight: 700
-                                }}
-                            >
-                                {text}
-                            </span>
-                            <span style={{ color: "var(--accent-gold)", fontSize: "2rem" }}>✦</span>
-                        </React.Fragment>
-                    ))}
-                </div>
-            </motion.div>
-            <motion.div
-                animate={{ x: reverse ? [-1000, 0] : [1000, 0] }}
-                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                style={{ display: "inline-block", position: "absolute", top: "20px", left: reverse ? "-1000px" : "1000px" }}
-            >
-                <div style={{ display: "flex", gap: "60px", alignItems: "center" }}>
-                    {[...Array(6)].map((_, i) => (
-                        <React.Fragment key={i}>
-                            <span
-                                className="glitch-text"
-                                data-text={text}
-                                style={{
-                                    fontFamily: "var(--font-display)",
-                                    fontSize: "3rem",
-                                    color: "var(--text-primary)",
-                                    fontWeight: 700
-                                }}
-                            >
-                                {text}
-                            </span>
-                            <span style={{ color: "var(--accent-gold)", fontSize: "2rem" }}>✦</span>
-                        </React.Fragment>
-                    ))}
-                </div>
+                {[...Array(8)].map((_, i) => (
+                    <div key={i} style={{ display: "flex", gap: "80px", alignItems: "center", paddingRight: "80px" }}>
+                        <span
+                            style={{
+                                fontFamily: "var(--font-serif)",
+                                fontSize: "clamp(1.4rem, 4vw, 2.2rem)",
+                                color: "var(--fg)",
+                                fontWeight: 400,
+                                letterSpacing: "-0.01em",
+                                whiteSpace: "nowrap",
+                                textTransform: "uppercase"
+                            }}
+                        >
+                            {text}
+                        </span>
+                        <span style={{ color: "var(--accent)", fontSize: "1.2rem", opacity: 0.5 }}>✦</span>
+                    </div>
+                ))}
             </motion.div>
         </div>
     );
 };
+

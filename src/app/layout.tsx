@@ -1,10 +1,6 @@
-import type { Metadata } from "next";
+"use client";
+import { motion, AnimatePresence } from "framer-motion";
 import "./globals.css";
-
-export const metadata: Metadata = {
-  title: "Kalaakars — Minimalist Architecture Studio in Kerala",
-  description: "Boutique architecture studio based in Calicut, Kerala, specializing in climate-responsive designs that merge regional traditions with contemporary structural innovation.",
-};
 
 export default function RootLayout({
   children,
@@ -16,7 +12,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=JetBrains+Mono:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -24,22 +20,22 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               "name": "Kalaakars Architecture Studio",
-              "image": "https://kalaakars.in/logo.svg",
+              "image": "https://kalaakaars.in/logo.svg",
               "@id": "",
-              "url": "https://kalaakars.in",
-              "telephone": "+914952700000",
+              "url": "https://kalaakaars.in",
+              "telephone": "+917306358793",
               "address": {
                 "@type": "PostalAddress",
-                "streetAddress": "S.M. Street",
-                "addressLocality": "Kozhikode",
-                "postalCode": "673001",
+                "streetAddress": "Opposite Hill Fort Auditorium Gate, Pathanapuram, Areekode",
+                "addressLocality": "Malappuram",
+                "postalCode": "673639",
                 "addressRegion": "KL",
                 "addressCountry": "IN"
               },
               "geo": {
                 "@type": "GeoCoordinates",
-                "latitude": 11.2508,
-                "longitude": 75.7804
+                "latitude": 11.2384,
+                "longitude": 76.0464
               },
               "openingHoursSpecification": {
                 "@type": "OpeningHoursSpecification",
@@ -55,35 +51,27 @@ export default function RootLayout({
                 "closes": "18:00"
               },
               "sameAs": [
-                "https://instagram.com/kalaakars",
-                "https://linkedin.com/company/kalaakars"
+                "https://instagram.com/kalaakaars_architecture",
+                "https://linkedin.com/company/kalaakaars-architecture"
               ]
             })
           }}
         />
       </head>
 
-      <body>
-        <div className="cursor-dot" id="cursor-dot"></div>
-        <div className="cursor-outline" id="cursor-outline"></div>
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            const dot = document.getElementById('cursor-dot');
-            const outline = document.getElementById('cursor-outline');
-            window.addEventListener('mousemove', (e) => {
-              const posX = e.clientX;
-              const posY = e.clientY;
-              dot.style.left = posX + 'px';
-              dot.style.top = posY + 'px';
-              outline.animate({
-                left: posX + 'px',
-                top: posY + 'px'
-              }, { duration: 500, fill: 'forwards' });
-            });
-          `
-        }} />
-        {children}
+      <body style={{ overflowX: "hidden" }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+             {children}
+          </motion.div>
+        </AnimatePresence>
       </body>
     </html>
   );
 }
+

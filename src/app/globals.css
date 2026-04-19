@@ -1,5 +1,6 @@
 :root {
   --font-sans: 'Outfit', -apple-system, sans-serif;
+  --font-serif: 'Cormorant Garamond', serif;
   --font-mono: 'JetBrains Mono', monospace;
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --bg: #ffffff;
@@ -59,42 +60,9 @@ button {
   cursor: pointer;
 }
 
-/* Custom Cursor */
-.cursor-dot {
-  width: 8px;
-  height: 8px;
-  background-color: var(--accent);
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 999999;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s, background-color 0.3s;
-}
-
-.cursor-outline {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--accent);
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 999998;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: transform 0.1s var(--ease-expo), width 0.3s, height 0.3s, border-color 0.3s;
-}
-
-@media (max-width: 1024px) {
-  .cursor-dot, .cursor-outline {
-    display: none;
-  }
-}
 
 /* Scrollbar */
+
 ::-webkit-scrollbar {
   width: 3px;
 }
@@ -108,6 +76,12 @@ button {
 }
 
 /* ─── UTILITIES ─── */
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
 .u-mono {
   font-family: var(--font-mono);
   font-size: 0.65rem;
@@ -118,17 +92,9 @@ button {
 .u-label {
   font-family: var(--font-mono);
   font-size: 0.6rem;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #999;
-}
-
-[data-theme='dark'] .u-label {
-  color: #666;
-}
-
-.text-accent {
-  color: var(--accent);
 }
 
 /* ─── RESPONSIVE GRID HELPERS ─── */

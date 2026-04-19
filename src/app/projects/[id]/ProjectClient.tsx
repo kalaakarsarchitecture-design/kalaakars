@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef } from "react";
 import { useRouter } from "next/navigation";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { useIsMobile } from "@/lib/useIsMobile";
 
@@ -10,10 +10,10 @@ function Navbar() {
         <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9000, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Link href="/" style={{ display: "flex", alignItems: "center", gap: "9px" }}>
                 <img src="/logo.svg" alt="K" style={{ width: "22px", height: "26px", filter: "brightness(0) invert(1)", objectFit: "contain" }} />
-                <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.78rem", letterSpacing: "0.18em", color: "#fff", textTransform: "uppercase" as const }}>Kalaakars</span>
+                <span style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "1.2rem", color: "#fff" }}>Kalaakars</span>
             </Link>
             <nav style={{ display: "flex", gap: "24px" }}>
-                {[["PROJECTS", "/"], ["STUDIO", "/studio"], ["INDEX", "/index"]].map(([l, h]) => (
+                {[["PROJECTS", "/projects"], ["STUDIO", "/studio"], ["JOURNAL", "/journal"]].map(([l, h]) => (
                     <Link key={l} href={h} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em", color: "rgba(255,255,255,0.7)" }}>{l}</Link>
                 ))}
             </nav>
@@ -126,7 +126,7 @@ export default function ProjectClient({ project, nextProject }: { project: any, 
                     <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.22em", color: "var(--accent)", marginBottom: "16px" }}>
                         {project.category} · {project.location} · {project.year}
                     </motion.p>
-                    <h1 style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(2.4rem, 10vw, 8rem)", letterSpacing: "-0.04em", lineHeight: 0.85 }}>
+                    <h1 style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "clamp(3.5rem, 10vw, 8.5rem)", letterSpacing: "-0.04em", lineHeight: 0.82, textTransform: "uppercase" }}>
                         {project.title}
                     </h1>
                 </div>
@@ -137,7 +137,7 @@ export default function ProjectClient({ project, nextProject }: { project: any, 
                 <div>
                     <Reveal>
                         <p className="u-label" style={{ marginBottom: "24px" }}>The Concept</p>
-                        <h2 style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: isMobile ? "1.6rem" : "2.6rem", letterSpacing: "-0.03em", lineHeight: 1.2, color: "var(--fg)" }}>
+                        <h2 style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: isMobile ? "2rem" : "3.2rem", letterSpacing: "-0.02em", lineHeight: 1.1, color: "var(--fg)" }}>
                             {project.subtitle}
                         </h2>
                     </Reveal>
@@ -152,39 +152,63 @@ export default function ProjectClient({ project, nextProject }: { project: any, 
                 </div>
             </section>
 
-            {/* 3. GALLERY with Lightbox trigger */}
-            <section style={{ background: "#0c0c0c" }}>
-                {(() => {
-                    const rows: React.ReactNode[] = [];
-                    let i = 0;
-                    while (i < project.gallery.length) {
-                        const img = project.gallery[i];
-                        if (img.span === "full" || isMobile) {
-                            rows.push(
-                                <div key={i} onClick={() => setSelectedImg(img.src)} style={{ cursor: "zoom-in" }}>
-                                    <GalleryImg src={img.src} height={isMobile ? "65vw" : "95vh"} />
-                                </div>
-                            );
-                            i++;
-                        } else {
-                            const next = project.gallery[i + 1];
-                            rows.push(
-                                <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-                                    <div onClick={() => setSelectedImg(img.src)} style={{ cursor: "zoom-in" }}>
-                                        <GalleryImg src={img.src} height="85vh" />
-                                    </div>
-                                    {next ? (
-                                        <div onClick={() => setSelectedImg(next.src)} style={{ cursor: "zoom-in" }}>
-                                            <GalleryImg src={next.src} height="85vh" />
-                                        </div>
-                                    ) : <div />}
-                                </div>
-                            );
-                            i += 2;
-                        }
-                    }
-                    return rows;
-                })()}
+            {/* 3. ADAPTIVE MASONRY GALLERY */}
+            <section style={{ 
+                padding: isMobile ? "20px" : "60px 40px", 
+                background: "#0c0c0c",
+            }}>
+                <div style={{ 
+                    columnCount: isMobile ? 1 : 2, 
+                    columnGap: isMobile ? "20px" : "40px",
+                }}>
+                    {project.gallery.map((img, i) => (
+                        <motion.div 
+                            key={i} 
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1, duration: 0.8, ease: "var(--ease-expo)" }}
+                            onClick={() => setSelectedImg(img.src)} 
+                            style={{ 
+                                cursor: "zoom-in", 
+                                marginBottom: isMobile ? "20px" : "40px",
+                                breakInside: "avoid",
+                                position: "relative",
+                                overflow: "hidden",
+                                border: "1px solid rgba(255,255,255,0.08)", // Blueprint Frame
+                                padding: "8px", // Inset frame effect
+                                background: "#111"
+                            }}
+                        >
+                            <img 
+                                src={img.src} 
+                                alt="" 
+                                style={{ 
+                                    width: "100%", 
+                                    height: "auto", 
+                                    display: "block",
+                                    objectFit: "cover",
+                                    transition: "transform 1.2s cubic-bezier(0.19, 1, 0.22, 1)"
+                                }} 
+                                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.03)"}
+                                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                            />
+                            {/* Technical Frame Detail */}
+                            <div style={{ 
+                                position: "absolute", 
+                                bottom: "16px", 
+                                right: "16px", 
+                                fontFamily: "var(--font-mono)", 
+                                fontSize: "0.5rem", 
+                                color: "var(--accent)", 
+                                opacity: 0.5,
+                                letterSpacing: "0.1em"
+                            }}>
+                                [ ARCH-IMG-{i + 1} ]
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
             </section>
 
             {/* 4. PULL QUOTE */}
@@ -223,7 +247,7 @@ export default function ProjectClient({ project, nextProject }: { project: any, 
                 />
                 <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", padding: "40px" }}>
                     <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.3em", marginBottom: "32px", color: "var(--accent)" }}>RELATIONAL WORKS</p>
-                    <h2 style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(2.5rem, 8vw, 7.5rem)", letterSpacing: "-0.04em", textAlign: "center" as const, lineHeight: 0.9 }}>
+                    <h2 style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "clamp(3.5rem, 8vw, 9rem)", letterSpacing: "-0.04em", textAlign: "center" as const, lineHeight: 0.85, textTransform: "uppercase" }}>
                         {nextProject.title}
                     </h2>
                     <div style={{ marginTop: "48px", width: "1px", height: "80px", background: "#fff" }} />

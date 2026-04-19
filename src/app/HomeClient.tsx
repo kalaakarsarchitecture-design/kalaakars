@@ -2,20 +2,26 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { Marquee } from "@/components/sections/Marquee";
+
 import { useIsMobile } from "@/lib/useIsMobile";
 
 /* ═══════════════════════════════════════════
    FULL-SCREEN NAVIGATION OVERLAY
 ═══════════════════════════════════════════ */
-function NavOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
+function NavOverlay({ open, onClose, settings }: { open: boolean; onClose: () => void; settings?: any }) {
+  const isMobile = useIsMobile();
   const links = [
-    { label: "Projects", href: "/", num: "01" },
+    { label: "Projects", href: "/projects", num: "01" },
     { label: "Studio", href: "/studio", num: "02" },
     { label: "Process", href: "/process", num: "03" },
     { label: "Journal", href: "/journal", num: "04" },
-    { label: "Contact", href: "/studio#contact", num: "05" },
   ];
 
+  const upcoming = [
+    { title: "Coastal Research Lab", year: "2025" },
+    { title: "Wayanad Wellness Retreat", year: "2025" },
+  ];
 
   return (
     <AnimatePresence>
@@ -29,60 +35,92 @@ function NavOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
             position: "fixed", inset: 0, zIndex: 99999,
             background: "#0c0c0c",
             display: "flex", flexDirection: "column",
-            overflowY: "auto",
+            overflow: "hidden",
           }}
         >
           {/* Top bar */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px 24px", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px 32px", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
             <Link href="/" onClick={onClose} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <img src="/logo.svg" alt="K" style={{ width: "22px", height: "26px", objectFit: "contain", filter: "brightness(0) invert(1)" }} />
-              <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.78rem", letterSpacing: "0.18em", color: "#fff", textTransform: "uppercase" }}>Kalaakars</span>
+              <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.8rem", letterSpacing: "0.2em", color: "#fff", textTransform: "uppercase" }}>Kalaakars</span>
             </Link>
-            <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px", lineHeight: 0 }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5">
-                <line x1="4" y1="4" x2="20" y2="20" /><line x1="20" y1="4" x2="4" y2="20" />
+            <button onClick={onClose} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "50%", cursor: "pointer", width: "45px", height: "45px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
 
-          {/* Nav links */}
-          <div style={{ flex: 1, padding: "40px 24px", display: "flex", flexDirection: "column" }}>
-            {links.map((link, i) => (
-              <motion.div
-                key={link.label}
-                initial={{ opacity: 0, x: -24 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.08 + i * 0.07, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
-              >
-                <Link href={link.href} onClick={onClose} style={{ display: "flex", alignItems: "baseline", gap: "20px", padding: "20px 0" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", width: "28px", flexShrink: 0 }}>{link.num}</span>
-                  <span style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(2rem, 10vw, 5rem)", letterSpacing: "-0.04em", color: "#fff", lineHeight: 1 }}>
-                    {link.label}
-                  </span>
-                </Link>
-              </motion.div>
-            ))}
-
-            {/* Contact info */}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ marginTop: "48px" }}>
-              <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", marginBottom: "14px" }}>GET IN TOUCH</p>
-              <a href="mailto:hello@kalaakars.in" style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", color: "#fff", display: "block", marginBottom: "8px" }}>hello@kalaakars.in</a>
-              <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", lineHeight: 1.6 }}>
-                S.M. Street, Kozhikode — 673001<br />Kerala, India
-              </p>
-              <div style={{ display: "flex", gap: "24px", marginTop: "32px" }}>
-                {["Instagram", "LinkedIn", "Behance"].map(s => (
-                  <a key={s} href="#" style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.08em" }}>{s}</a>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: isMobile ? "24px" : "40px", padding: isMobile ? "32px 24px" : "60px 80px", overflowY: "auto" }}>
+            {/* Primary Links */}
+            <div style={{ flex: isMobile ? "none" : 1 }}>
+              <p className="u-label" style={{ color: "rgba(255,255,255,0.3)", marginBottom: isMobile ? "24px" : "40px" }}>NAVIGATION</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "12px" : "24px" }}>
+                {links.map((link, i) => (
+                  <motion.div
+                    key={link.label}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + i * 0.05 }}
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={onClose}
+                      style={{
+                        display: "flex", alignItems: "baseline", gap: "16px",
+                        textDecoration: "none", color: "#fff",
+                      }}
+                    >
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--accent)" }}>{link.num}</span>
+                      <span style={{
+                        fontFamily: "var(--font-serif)",
+                        fontSize: isMobile ? "3rem" : "4.5rem",
+                        fontWeight: 400,
+                        lineHeight: 1,
+                        letterSpacing: "-0.04em",
+                        transition: "transform 0.3s var(--ease-expo)",
+                      }} className="nav-link-hover">
+                        {link.label}
+                      </span>
+                    </Link>
+                  </motion.div>
                 ))}
               </div>
-            </motion.div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "32px", marginTop: isMobile ? "20px" : "0" }}>
+                <div>
+                   <p className="u-label" style={{ color: "rgba(255,255,255,0.3)", marginBottom: "20px" }}>BROWSE BY ARCHIVE</p>
+                   <Link href="/projects" onClick={onClose} style={{ 
+                      fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.2em", color: "#fff", 
+                      padding: "14px 20px", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px",
+                      display: "inline-block", textDecoration: "none"
+                   }}>
+                    FULL ARCHIVE →
+                   </Link>
+                </div>
+
+                <div>
+                    <p className="u-label" style={{ color: "rgba(255,255,255,0.3)", marginBottom: "16px" }}>CONTACT</p>
+                    <a href={`mailto:${settings?.email || "kalaakaarsarchitecture@gmail.com"}`} style={{ fontFamily: "var(--font-sans)", fontSize: "1.1rem", color: "#fff", display: "block" }}>
+                      {settings?.email || "kalaakaarsarchitecture@gmail.com"}
+                    </a>
+                    <a href={`tel:${settings?.phone || "+91 7306358793"}`} style={{ fontFamily: "var(--font-sans)", fontSize: "1.1rem", color: "var(--accent)", display: "block", marginTop: "8px" }}>
+                      {settings?.phone || "+91 7306358793"}
+                    </a>
+                    <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(255,255,255,0.4)", marginTop: "12px", lineHeight: 1.6, whiteSpace: "pre-line" }}>
+                      {settings?.address || "Opposite Hill Fort Auditorium Gate\nPathanapuram, Areekode\nMalappuram, Kerala"}
+                    </p>
+                 </div>
+            </div>
           </div>
 
-          {/* Bottom bar */}
-          <div style={{ padding: "16px 24px", borderTop: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "space-between", flexShrink: 0 }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.2)", letterSpacing: "0.15em" }}>© 2024 KALAAKARS</span>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.2)", letterSpacing: "0.15em" }}>CALICUT · KERALA</span>
+          {/* Bottom strip */}
+          <div style={{ padding: "20px 24px", borderTop: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "space-between" }}>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.2)" }}>© 2024 KALAAKARS</span>
+            <div style={{ display: "flex", gap: "20px" }}>
+                {["Instagram", "LinkedIn"].map(s => <span key={s} style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.3)" }}>{s}</span>)}
+            </div>
           </div>
         </motion.div>
       )}
@@ -90,26 +128,11 @@ function NavOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
+
 /* ═══════════════════════════════════════════
    MARQUEE
 ═══════════════════════════════════════════ */
-function Marquee({ items }: { items: string[] }) {
-  return (
-    <div style={{ overflow: "hidden", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "20px 0", background: "var(--bg)" }}>
-      <motion.div
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 35, ease: "linear", repeat: Infinity }}
-        style={{ display: "flex", whiteSpace: "nowrap" }}
-      >
-        {[...items, ...items].map((item, i) => (
-          <span key={i} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.22em", color: "#888", paddingRight: "80px" }}>
-            {item}
-          </span>
-        ))}
-      </motion.div>
-    </div>
-  );
-}
+
 
 
 /* ═══════════════════════════════════════════
@@ -126,8 +149,8 @@ function AwardsStrip({ isMobile }: { isMobile: boolean }) {
   return (
     <section style={{ padding: isMobile ? "72px 20px" : "100px 40px", borderTop: "1px solid #EBEBEB" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "flex-end", flexDirection: isMobile ? "column" : "row", gap: "12px", marginBottom: "48px" }}>
-        <h2 style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(1.8rem, 5vw, 3rem)", letterSpacing: "-0.04em" }}>Recognition</h2>
-        <span className="u-label">AWARDS & PRESS</span>
+        <h2 style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "clamp(2.5rem, 6vw, 4rem)", letterSpacing: "-0.03em" }}>Recognition</h2>
+        <span className="u-label">LEGACY OF 8 YEARS</span>
       </div>
       {awards.map((a, i) => (
         <motion.div
@@ -140,7 +163,7 @@ function AwardsStrip({ isMobile }: { isMobile: boolean }) {
         >
           <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "20px" : "48px" }}>
             <span className="u-label" style={{ width: "36px", flexShrink: 0 }}>{a.year}</span>
-            <span style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: isMobile ? "0.95rem" : "1.1rem", letterSpacing: "-0.02em" }}>{a.title}</span>
+            <span style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: isMobile ? "1.2rem" : "1.6rem", letterSpacing: "-0.01em" }}>{a.title}</span>
           </div>
           {!isMobile && <span className="u-label">{a.cat}</span>}
         </motion.div>
@@ -167,9 +190,9 @@ function Credo({ isMobile }: { isMobile: boolean }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "clamp(2rem, 6vw, 4.8rem)", letterSpacing: "-0.05em", lineHeight: 1.05, color: "#fff", maxWidth: "1100px" }}
+          style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "clamp(2.5rem, 7vw, 6rem)", letterSpacing: "-0.03em", lineHeight: 0.95, color: "#fff", maxWidth: "1200px" }}
         >
-          Rooted in the <span style={{ color: "var(--accent)" }}>Malabar monsoon</span>, shaped by light, and built for the centuries.
+          Mastering the balance of <span style={{ color: "var(--accent)" }}>Style, Comfort & Function.</span> Crafting timeless resort environments with Malabar precision.
         </motion.p>
       </motion.div>
       <div style={{ marginTop: "64px", display: "flex", alignItems: "center", gap: "16px" }}>
@@ -184,9 +207,79 @@ function Credo({ isMobile }: { isMobile: boolean }) {
 
 
 /* ═══════════════════════════════════════════
+   FAQ SECTION
+═══════════════════════════════════════════ */
+function FAQ({ isMobile }: { isMobile: boolean }) {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  const faqs = [
+    { 
+      q: "What types of projects do you specialize in?", 
+      a: "We specialize in both modern and classic resort projects, premium residential villas, and boutique commercial spaces. Our core expertise lies in high-precision craftwork interiors." 
+    },
+    { 
+      q: "How long does a typical project take?", 
+      a: "Architectural timelines vary by scale, but typically a residential project takes 12–18 months from concept to handover, while resort projects may take 18–24 months." 
+    },
+    { 
+      q: "Do you handle interior design as well?", 
+      a: "Yes, we focus on 'Craftwork Interiors' where the architecture and interior flow are designed as a single cohesive narrative. We manage everything from spatial layout to bespoke furniture." 
+    },
+    { 
+      q: "Do you work outside of Malappuram and Kerala?", 
+      a: "While our studio is rooted in Areekode, we undertake projects across South India, especially in regions that allow for climate-responsive and tropical architectural interventions." 
+    }
+  ];
+
+  return (
+    <section id="faq" style={{ padding: isMobile ? "72px 20px" : "120px 40px", background: "#fff", borderTop: "1px solid var(--border)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.5fr", gap: "64px" }}>
+        <div>
+           <p className="u-label" style={{ color: "var(--accent)", marginBottom: "24px" }}>Guidance</p>
+           <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(2.5rem, 6vw, 4rem)", letterSpacing: "-0.03em", lineHeight: 1 }}>Frequent<br />Inquiries</h2>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+           {faqs.map((faq, i) => (
+             <div key={i} style={{ borderBottom: "1px solid #eee" }}>
+               <button 
+                onClick={() => setOpenIdx(openIdx === i ? null : i)}
+                style={{ 
+                  width: "100%", background: "none", border: "none", display: "flex", 
+                  justifyContent: "space-between", alignItems: "center", padding: "32px 0", 
+                  cursor: "pointer", textAlign: "left"
+                }}
+               >
+                 <span style={{ fontFamily: "var(--font-serif)", fontSize: isMobile ? "1.2rem" : "1.8rem", color: openIdx === i ? "var(--accent)" : "var(--fg)", transition: "color 0.4s" }}>{faq.q}</span>
+                 <motion.span animate={{ rotate: openIdx === i ? 45 : 0 }} style={{ fontSize: "1.5rem", fontWeight: 300 }}>+</motion.span>
+               </button>
+               <AnimatePresence>
+                 {openIdx === i && (
+                   <motion.div 
+                    initial={{ height: 0, opacity: 0 }} 
+                    animate={{ height: "auto", opacity: 1 }} 
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.5, ease: "var(--ease-expo)" }}
+                    style={{ overflow: "hidden" }}
+                   >
+                     <p style={{ fontFamily: "var(--font-sans)", fontSize: "1.05rem", lineHeight: 1.7, color: "#666", paddingBottom: "32px", maxWidth: "600px" }}>
+                       {faq.a}
+                     </p>
+                   </motion.div>
+                 )}
+               </AnimatePresence>
+             </div>
+           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+/* ═══════════════════════════════════════════
    FOOTER
 ═══════════════════════════════════════════ */
-function Footer({ isMobile }: { isMobile: boolean }) {
+function Footer({ isMobile, settings }: { isMobile: boolean; settings?: any }) {
   return (
     <footer id="contact" style={{ padding: isMobile ? "72px 20px 48px" : "100px 40px 60px", borderTop: "1px solid var(--border)" }}>
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr 1fr", gap: isMobile ? "60px" : "100px", marginBottom: "80px" }}>
@@ -200,16 +293,15 @@ function Footer({ isMobile }: { isMobile: boolean }) {
         </div>
         <div>
           <p className="u-label" style={{ marginBottom: "20px" }}>Connect</p>
-          <a href="mailto:hello@kalaakars.in" style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", display: "block", marginBottom: "8px" }}>hello@kalaakars.in</a>
-          <a href="https://instagram.com/kalaakars" target="_blank" rel="noreferrer" style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", display: "block", marginBottom: "8px" }}>Instagram</a>
-          <a href="https://linkedin.com/company/kalaakars" target="_blank" rel="noreferrer" style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", display: "block", marginBottom: "8px" }}>LinkedIn</a>
+          <a href={`mailto:${settings?.email || "kalaakaarsarchitecture@gmail.com"}`} style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", display: "block", marginBottom: "8px" }}>{settings?.email || "kalaakaarsarchitecture@gmail.com"}</a>
+          <a href={`tel:${settings?.phone || "+917306358793"}`} style={{ fontFamily: "var(--font-sans)", fontSize: "1.05rem", display: "block", marginBottom: "8px", color: "var(--accent)" }}>{settings?.phone || "+91 7306358793"}</a>
         </div>
         <div>
           <p className="u-label" style={{ marginBottom: "20px" }}>Studio</p>
-          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "1rem", lineHeight: 1.65 }}>
-            S.M. Street<br />Kozhikode — 673001<br />Kerala, India
+          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "1rem", lineHeight: 1.65, whiteSpace: "pre-line" }}>
+            {settings?.address || "Opposite Hill Fort Auditorium Gate\nPathanapuram, Areekode\nMalappuram, Kerala"}
           </p>
-          <Link href="/process" style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--accent)", letterSpacing: "0.1em", marginTop: "16px", display: "block" }}>OUR PROCESS ↗</Link>
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "#999", marginTop: "12px" }}>{settings?.yearsExp || "8"} YEARS OF EXCELLENCE</p>
         </div>
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: isMobile ? "column" : "row", gap: "24px", paddingTop: "32px", borderTop: "1px solid var(--border)" }}>
@@ -218,6 +310,7 @@ function Footer({ isMobile }: { isMobile: boolean }) {
           <span className="u-label">© 2024 KALAAKARS ARCHITECTURE STUDIO</span>
         </div>
         <div style={{ display: "flex", gap: "24px" }}>
+           <a href="#faq" className="u-label" style={{ color: "#999", textDecoration: "none" }}>FAQ</a>
            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="u-label" style={{ background: "none", border: "none", color: "var(--accent)" }}>Back to top ↑</button>
         </div>
       </div>
@@ -229,7 +322,7 @@ function Footer({ isMobile }: { isMobile: boolean }) {
 /* ═══════════════════════════════════════════
    HOME PAGE COMPONENT
 ═══════════════════════════════════════════ */
-export default function HomeClient({ initialProjects }: { initialProjects: any[] }) {
+export default function HomeClient({ initialProjects, initialSettings }: { initialProjects: any[]; initialSettings?: any }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [navOpen, setNavOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -241,18 +334,18 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
   }, [navOpen]);
 
   const tickerItems = [
-    "GRAND RIDGE DRIVE · CALICUT",
-    "VOID ATRIUM · KOZHIKODE",
-    "MALABAR HOUSE · CALICUT",
-    "KOCHI WATERFRONT · KOCHI",
-    "AWARD-WINNING ARCHITECTURE",
+    "CRAFTWORK INTERIORS",
+    "RESORT & RESIDENTIAL",
+    "8 YEARS OF EXCELLENCE",
+    "PRECISION & CREATIVITY",
+    "MALAPPURAM · AREEKODE",
+    "KERALA COAST",
     "DESIGN DRIVEN STUDIO",
-    "EST. 2019 · KERALA",
   ];
 
   return (
     <>
-      <NavOverlay open={navOpen} onClose={() => setNavOpen(false)} />
+      <NavOverlay open={navOpen} onClose={() => setNavOpen(false)} settings={initialSettings} />
 
       <div style={{ background: "#fff" }}>
 
@@ -297,7 +390,7 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
               </div>
 
               {/* ── BOTTOM CONTENT BLOCK ── */}
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 22px 28px", zIndex: 10 }}>
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 22px 32px", zIndex: 10 }}>
                 {/* Category pill */}
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -306,10 +399,10 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.35 }}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(255,255,255,0.12)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "100px", padding: "5px 12px", marginBottom: "14px" }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "100px", padding: "5px 12px", marginBottom: "16px" }}
                   >
                     <div style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#D4A520" }} />
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(255,255,255,0.9)", letterSpacing: "0.15em" }}>{active.category} · {active.year}</span>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "#fff", letterSpacing: "0.15em", textTransform: "uppercase" }}>{active.category} {active.year}</span>
                   </motion.div>
                 </AnimatePresence>
 
@@ -317,47 +410,45 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeIdx + "-name"}
-                    initial={{ opacity: 0, y: 14 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <div style={{ fontFamily: "var(--font-sans)", fontWeight: 800, fontSize: "clamp(3rem, 14vw, 5.5rem)", letterSpacing: "-0.05em", lineHeight: 0.85, color: "#fff", textTransform: "uppercase" }}>
-                      KALAAKARS
-                    </div>
-                    <div style={{ fontFamily: "var(--font-sans)", fontWeight: 200, fontSize: "clamp(0.75rem, 3.5vw, 1rem)", letterSpacing: "0.42em", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", marginTop: "8px" }}>
-                      ARCHITECTURE
-                    </div>
+                    <h1 style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "clamp(3rem, 16vw, 5.5rem)", letterSpacing: "-0.04em", lineHeight: 0.85, color: "#fff", textTransform: "uppercase", margin: 0 }}>
+                      {active.title.split(" ")[0]}<br />
+                      <span style={{ color: "rgba(255,255,255,0.6)" }}>{active.title.split(" ").slice(1).join(" ")}</span>
+                    </h1>
                   </motion.div>
                 </AnimatePresence>
 
-                {/* ── CTA PILLS — directly on image ── */}
-                <div style={{ display: "flex", gap: "10px", marginTop: "22px" }}>
-                  <Link href="/studio" style={{
-                    flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-                    padding: "13px 16px",
-                    background: "rgba(255,255,255,0.95)",
-                    backdropFilter: "blur(12px)",
-                    color: "#111",
-                    fontFamily: "var(--font-sans)", fontSize: "0.78rem", fontWeight: 600,
-                    letterSpacing: "0.02em",
-                    borderRadius: "6px",
-                    gap: "6px",
+                {/* ── CTA PILLS ── */}
+                <div style={{ display: "flex", gap: "10px", marginTop: "32px", width: "100%" }}>
+                  <Link href={`/projects/${active.slug}`} style={{
+                    flex: 1.4, display: "flex", alignItems: "center", justifyContent: "center",
+                    padding: "15px 16px",
+                    background: "#D4A520",
+                    color: "#000",
+                    fontFamily: "var(--font-mono)", fontSize: "0.6rem", fontWeight: 700,
+                    letterSpacing: "0.15em",
+                    borderRadius: "4px",
+                    textTransform: "uppercase"
                   }}>
-                    Studio Profile
+                    VIEW CASE →
                   </Link>
                   <Link href="/studio#contact" style={{
                     flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-                    padding: "13px 16px",
-                    background: "rgba(20,20,20,0.65)",
+                    padding: "15px 16px",
+                    background: "rgba(255,255,255,0.08)",
                     backdropFilter: "blur(12px)",
-                    border: "1px solid rgba(255,255,255,0.25)",
+                    border: "1px solid rgba(255,255,255,0.15)",
                     color: "#fff",
-                    fontFamily: "var(--font-sans)", fontSize: "0.78rem", fontWeight: 500,
-                    letterSpacing: "0.02em",
-                    borderRadius: "6px",
+                    fontFamily: "var(--font-mono)", fontSize: "0.6rem", fontWeight: 500,
+                    letterSpacing: "0.1em",
+                    borderRadius: "4px",
+                    textTransform: "uppercase"
                   }}>
-                    Free Consultation
+                    INQUIRY
                   </Link>
                 </div>
               </div>
@@ -367,8 +458,9 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
             <div style={{ flex: 1, background: "#0a0a0a" }}>
 
               {/* Section header */}
-              <div style={{ padding: "22px 22px 16px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-                <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.22em" }}>SELECTED WORKS — {initialProjects.length} PROJECTS</p>
+              <div style={{ padding: "24px 22px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.22em", textTransform: "uppercase" }}>Project Narratives</p>
+                <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "#D4A520", letterSpacing: "0.1em" }}>{activeIdx + 1}/{initialProjects.length}</p>
               </div>
 
               {/* Project rows */}
@@ -379,117 +471,137 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
                     <motion.div
                       key={p.id}
                       onClick={() => setActiveIdx(i)}
-                      whileTap={{ scale: 0.985 }}
+                      whileTap={{ scale: 0.98 }}
                       style={{
-                        display: "flex", justifyContent: "space-between", alignItems: "center",
-                        padding: "16px 22px",
-                        borderBottom: "1px solid rgba(255,255,255,0.06)",
-                        borderLeft: isActive ? "3px solid #D4A520" : "3px solid transparent",
+                        padding: "20px 22px",
+                        borderBottom: "1px solid rgba(255,255,255,0.05)",
                         cursor: "pointer",
-                        background: isActive ? "rgba(255,255,255,0.04)" : "transparent",
-                        transition: "background 0.2s, border-color 0.2s",
-                        gap: "14px",
+                        background: isActive ? "rgba(212,165,32,0.06)" : "transparent",
+                        transition: "background 0.3s ease",
                       }}
                     >
-                      {/* Left: number + title + location */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: isActive ? "#D4A520" : "rgba(255,255,255,0.25)", marginBottom: "5px", letterSpacing: "0.12em", transition: "color 0.25s" }}>{p.num}</p>
-                        <Link
-                          href={`/projects/${p.slug}`}
-                          style={{
-                            fontFamily: "var(--font-sans)", fontWeight: 400,
-                            fontSize: "1.2rem", letterSpacing: "-0.03em",
-                            color: isActive ? "#fff" : "rgba(255,255,255,0.55)",
-                            display: "block", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-                            transition: "color 0.3s",
-                          }}
-                        >
-                          {p.title.split(" ").map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
-                        </Link>
-                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", marginTop: "4px", letterSpacing: "0.1em" }}>{p.location} · {p.year}</p>
-                      </div>
-                      {/* Right: thumbnail */}
-                      <div style={{ width: "60px", height: "60px", borderRadius: "4px", overflow: "hidden", flexShrink: 0, opacity: isActive ? 1 : 0.45, transition: "opacity 0.3s" }}>
-                        <motion.img
-                          src={p.heroImg}
-                          alt={p.title}
-                          animate={{ scale: isActive ? 1 : 1.05 }}
-                          transition={{ duration: 0.5 }}
-                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
+                                <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: isActive ? "#D4A520" : "rgba(255,255,255,0.2)" }}>{p.num}</span>
+                                {isActive && <motion.div layoutId="mobile-indicator" style={{ height: "1px", width: "20px", background: "#D4A520" }} />}
+                            </div>
+                            <h3 style={{
+                                fontFamily: "var(--font-sans)", fontWeight: 400,
+                                fontSize: "1.15rem", letterSpacing: "-0.02em",
+                                color: isActive ? "#fff" : "rgba(255,255,255,0.45)",
+                                transition: "color 0.3s",
+                                margin: 0
+                            }}>
+                                {p.title.split(" ").map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
+                            </h3>
+                            <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.2)", marginTop: "4px" }}>{p.category} · {p.location}</p>
+                        </div>
+                        
+                        <div style={{ 
+                            width: "56px", height: "56px", borderRadius: "100%", 
+                            overflow: "hidden", flexShrink: 0, 
+                            border: isActive ? "1px solid #D4A520" : "1px solid rgba(255,255,255,0.1)",
+                            transition: "border 0.3s",
+                            opacity: isActive ? 1 : 0.35
+                        }}>
+                            <img src={p.heroImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        </div>
                       </div>
                     </motion.div>
                   );
                 })}
               </nav>
-
-              {/* Browse all link */}
-              <div style={{ padding: "24px 22px" }}>
-                <Link href="/index" style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.2em", color: "rgba(255,255,255,0.35)", display: "inline-flex", alignItems: "center", gap: "10px" }}>
-                  VIEW ALL PROJECTS
-                  <svg width="16" height="6" viewBox="0 0 20 8" fill="none"><path d="M0 4H18M15 1l3 3-3 3" stroke="currentColor" strokeWidth="1" /></svg>
-                </Link>
-              </div>
             </div>
           </div>
-
         ) : (
           /* ── DESKTOP: Original Split-Screen ── */
           <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
             {/* LEFT PANEL */}
-            <aside style={{ width: "320px", minWidth: "260px", maxWidth: "340px", flexShrink: 0, background: "#fff", display: "flex", flexDirection: "column", overflowY: "auto", zIndex: 10 }}>
-              <div style={{ padding: "28px 32px 0" }}>
-                <Link href="/" style={{ display: "flex", alignItems: "center", gap: "9px" }}>
+
+            <aside style={{ width: "350px", minWidth: "300px", flexShrink: 0, background: "#fff", display: "flex", flexDirection: "column", overflowY: "auto", zIndex: 10, borderRight: "1px solid var(--border)" }}>
+              <div style={{ padding: "32px 40px" }}>
+                <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <img src="/logo.svg" alt="K" style={{ width: "24px", height: "28px", objectFit: "contain" }} />
-                  <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.78rem", letterSpacing: "0.18em", color: "#111", textTransform: "uppercase" }}>Kalaakars</span>
+                  <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.22em", color: "#111", textTransform: "uppercase" }}>Kalaakars</span>
                 </Link>
               </div>
-              <nav style={{ flex: 1, paddingTop: "60px" }}>
-                {initialProjects.map((p, i) => {
+
+              <nav style={{ flex: 1, paddingTop: "40px" }}>
+                <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", letterSpacing: "0.2em", color: "var(--accent)", padding: "0 40px 20px", opacity: 0.7 }}>LATEST WORKS</p>
+                {initialProjects.slice(0, 4).map((p, i) => {
                   const isActive = activeIdx === i;
                   return (
-                    <div 
+                    <motion.div 
                         key={p.id} 
+                        initial={false}
                         onMouseEnter={() => setActiveIdx(i)} 
                         onClick={() => setActiveIdx(i)} 
                         style={{ 
-                            padding: "20px 32px", 
+                            padding: "20px 40px", 
                             cursor: "pointer", 
-                            borderLeft: isActive ? "2px solid var(--accent)" : "2px solid transparent", 
-                            transition: "all 0.3s var(--ease-expo)",
-                            background: isActive ? "rgba(0,0,0,0.02)" : "transparent"
+                            position: "relative",
+                            transition: "all 0.4s var(--ease-expo)",
+                            background: isActive ? "rgba(212, 165, 32, 0.03)" : "transparent",
+                            borderBottom: "1px solid rgba(0,0,0,0.03)"
                         }}
                     >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "6px" }}>
-                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.1em", color: isActive ? "var(--accent)" : "#bbb", transition: "color 0.3s" }}>{p.num}</p>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "#ccc", letterSpacing: "0.05em" }}>{p.year}</span>
+                      {isActive && (
+                        <motion.div 
+                          layoutId="active-indicator"
+                          style={{ position: "absolute", left: 0, top: "20%", bottom: "20%", width: "3px", background: "var(--accent)" }}
+                        />
+                      )}
+                      
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", letterSpacing: "0.2em", color: isActive ? "var(--accent)" : "#bfbfbf", transition: "color 0.4s" }}>{p.num}</p>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                      
+                      <div style={{ display: "flex", alignItems: "center", gap: "16px", justifyContent: "space-between", marginTop: "4px" }}>
                         <Link href={`/projects/${p.slug}`} style={{ textDecoration: "none", flex: 1 }}>
-                            <p style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "clamp(1.2rem, 1.8vw, 1.5rem)", letterSpacing: "-0.02em", color: isActive ? "#111" : "#888", lineHeight: 1.15, transition: "color 0.35s" }}>
-                            {p.title.split(" ").map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
+                            <p style={{ 
+                                fontFamily: "var(--font-serif)", 
+                                fontWeight: 400, 
+                                fontSize: "1.6rem", 
+                                letterSpacing: "-0.01em", 
+                                color: isActive ? "#000" : "#999", 
+                                lineHeight: 1.1, 
+                                transition: "all 0.4s ease",
+                                transform: isActive ? "translateX(4px)" : "none"
+                            }}>
+                                {p.title.split(" ").map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
                             </p>
                         </Link>
-                        {isActive && (
-                            <motion.img 
-                                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                                src={p.heroImg} 
-                                style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "2px" }} 
-                            />
-                        )}
                       </div>
-                      <div style={{ marginTop: "8px", display: "flex", gap: "8px" }}>
-                         <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", padding: "2px 6px", border: `1px solid ${isActive ? 'var(--accent)' : '#eee'}`, borderRadius: "100px", color: isActive ? 'var(--accent)' : '#999' }}>{p.category}</span>
-                      </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
+
+                <div style={{ marginTop: "40px" }}>
+                  <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", letterSpacing: "0.2em", color: "#ccc", padding: "0 40px 20px" }}>UPCOMING</p>
+                  {[
+                    { title: "Coastal Research Lab", year: "2025" },
+                    { title: "Wayanad Retreat", year: "2025" }
+                  ].map((u, i) => (
+                    <div key={i} style={{ padding: "12px 40px", opacity: 0.6 }}>
+                       <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", color: "#555", letterSpacing: "-0.01em" }}>{u.title}</p>
+                       <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.45rem", color: "#bbb", marginTop: "2px" }}>/{u.year}</p>
+                    </div>
+                  ))}
+                </div>
               </nav>
 
-              <div style={{ padding: "24px 32px" }}>
-                <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.15em", color: "#ccc" }}>CALICUT · KERALA</p>
+              <div style={{ padding: "40px" }}>
+                <Link href="/projects" style={{ 
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: "#111", color: "#fff", padding: "14px", borderRadius: "4px",
+                  fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.15em", textDecoration: "none"
+                }}>
+                  PROJECTS ARCHIVE ↗
+                </Link>
               </div>
             </aside>
+
 
             {/* RIGHT PANEL */}
             <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
@@ -525,10 +637,10 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
                     exit={{ opacity: 0, y: -20 }} 
                     transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <div style={{ fontFamily: "var(--font-sans)", fontWeight: 800, fontSize: "clamp(4rem, 12vw, 11rem)", letterSpacing: "-0.05em", lineHeight: 0.8, color: "#fff", textTransform: "uppercase" }}>KALAAKARS</div>
+                    <div style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "clamp(4rem, 12vw, 12rem)", letterSpacing: "-0.04em", lineHeight: 0.8, color: "#fff", textTransform: "uppercase" }}>Kalaakars</div>
                     <div style={{ display: "flex", alignItems: "center", gap: "20px", marginTop: "12px" }}>
-                        <div style={{ width: "40px", height: "1px", background: "rgba(255,255,255,0.5)" }} />
-                        <div style={{ fontFamily: "var(--font-sans)", fontWeight: 200, fontSize: "clamp(1rem, 2.5vw, 2rem)", letterSpacing: "0.45em", color: "rgba(255,255,255,0.7)", textTransform: "uppercase" }}>ARCHITECTURE</div>
+                        <div style={{ width: "40px", height: "1px", background: "rgba(255,255,255,0.3)" }} />
+                        <div style={{ fontFamily: "var(--font-mono)", fontWeight: 300, fontSize: "clamp(0.8rem, 2vw, 1.4rem)", letterSpacing: "0.5em", color: "rgba(255,255,255,0.6)", textTransform: "uppercase" }}>ARCHITECTURE</div>
                     </div>
                   </motion.div>
                 </AnimatePresence>
@@ -549,7 +661,8 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
         )}
 
         {/* ── MARQUEE ── */}
-        <Marquee items={tickerItems} />
+        <Marquee text={tickerItems.join("  ✦  ")} />
+
 
         {/* ── AWARDS ── */}
         <AwardsStrip isMobile={isMobile} />
@@ -557,8 +670,11 @@ export default function HomeClient({ initialProjects }: { initialProjects: any[]
         {/* ── CREDO ── */}
         <Credo isMobile={isMobile} />
 
+        {/* ── FAQ ── */}
+        <FAQ isMobile={isMobile} />
+
         {/* ── FOOTER ── */}
-        <Footer isMobile={isMobile} />
+        <Footer isMobile={isMobile} settings={initialSettings} />
       </div>
     </>
   );
