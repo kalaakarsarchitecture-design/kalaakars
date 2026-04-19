@@ -4,13 +4,23 @@ import prisma from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export default async function JournalPage() {
-    const posts = await prisma.journal.findMany({
-        orderBy: { date: "desc" },
-    });
+    let posts: any[] = [];
+    let settings = null;
 
-    const settings = await prisma.siteSettings.findUnique({
-        where: { id: "global" },
-    });
+    try {
+        posts = await prisma.journal.findMany({
+            orderBy: { date: "desc" },
+        });
+
+        // @ts-ignore
+        if (prisma.siteSettings) {
+            settings = await prisma.siteSettings.findUnique({
+                where: { id: "global" },
+            });
+        }
+    } catch (e) {
+        console.error(e);
+    }
 
     return <JournalClient initialPosts={posts} settings={settings} />;
 }

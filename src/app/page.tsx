@@ -16,9 +16,17 @@ export default async function Page() {
         pull_quote: p.pullQuote,
     }));
 
-    const settings = await prisma.siteSettings.findUnique({
-        where: { id: "global" },
-    });
+    let settings = null;
+    try {
+        // @ts-ignore - Handle delay in Prisma Client regeneration
+        if (prisma.siteSettings) {
+            settings = await prisma.siteSettings.findUnique({
+                where: { id: "global" },
+            });
+        }
+    } catch (e) {
+        console.error("Settings fetch failed:", e);
+    }
 
     return <HomeClient initialProjects={mapped} initialSettings={settings} />;
 }

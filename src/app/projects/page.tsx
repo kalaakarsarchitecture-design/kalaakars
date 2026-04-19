@@ -4,13 +4,23 @@ import prisma from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
-    const projects = await prisma.project.findMany({
-        orderBy: { num: "asc" },
-    });
+    let projectList: any[] = [];
+    let settings = null;
 
-    const settings = await prisma.siteSettings.findUnique({
-        where: { id: "global" },
-    });
+    try {
+        projectList = await prisma.project.findMany({
+            orderBy: { num: "asc" },
+        });
 
-    return <ProjectsClient initialProjects={projects} settings={settings} />;
+        // @ts-ignore
+        if (prisma.siteSettings) {
+            settings = await prisma.siteSettings.findUnique({
+                where: { id: "global" },
+            });
+        }
+    } catch (e) {
+        console.error(e);
+    }
+
+    return <ProjectsClient initialProjects={projectList} settings={settings} />;
 }

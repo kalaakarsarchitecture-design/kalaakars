@@ -136,8 +136,8 @@ async function main() {
                 title: "Vernacular vs. Modern: The Malabar Balance",
                 category: "Essays",
                 date: "March 12, 2024",
-                image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?q=80&w=1200",
-                summary: "Exploring the tension and harmony between traditional Kerala building techniques and modern structural minimalism.",
+                heroImg: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?q=80&w=1200",
+                excerpt: "Exploring the tension and harmony between traditional Kerala building techniques and modern structural minimalism.",
                 content: "The Kerala monsoon is perhaps the greatest architect of our land. It dictates the slope of our roofs, the placement of our courtyards, and the choice of our timber..."
             },
             {
@@ -145,8 +145,8 @@ async function main() {
                 title: "Laterite: Materials That Breathe with the Earth",
                 category: "Materials",
                 date: "February 15, 2024",
-                image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200",
-                summary: "A deep dive into why laterite remains the most sustainable and structurally honest choice for South Indian architecture.",
+                heroImg: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200",
+                excerpt: "A deep dive into why laterite remains the most sustainable and structurally honest choice for South Indian architecture.",
                 content: "Laterite, the red earth that hardens upon exposure to air, has been the foundation of Malabar's architecture for centuries..."
             }
         ]
@@ -159,7 +159,6 @@ async function main() {
         update: {},
         create: {
             id: "global",
-            companyName: "Kalaakars Architecture",
             phone: "+91 7306358793",
             email: "kalaakaarsarchitecture@gmail.com",
             address: "Opposite Hill Fort Auditorium Gate, Pathanapuram, Areekode, Malappuram",
