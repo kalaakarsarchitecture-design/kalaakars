@@ -321,7 +321,14 @@ export default function HomeClient({ initialProjects, initialSettings }: { initi
   const [activeIdx, setActiveIdx] = useState(0);
   const [navOpen, setNavOpen] = useState(false);
   const isMobile = useIsMobile();
-  const active = initialProjects[activeIdx] || initialProjects[0] || {} as any;
+  const active = initialProjects[activeIdx] || initialProjects[0] || {
+    title: "Kalaakars Architecture",
+    category: "Studio",
+    year: "2024",
+    heroImg: "https://images.unsplash.com/photo-1628080185121-7243cde15286?q=80&w=2000",
+    slug: "coming-soon",
+    location: "Kerala"
+  } as any;
 
   useEffect(() => {
     document.body.style.overflow = navOpen ? "hidden" : "";

@@ -125,7 +125,7 @@ export default function ProjectsClient({ initialProjects, settings }: { initialP
                                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                             <div>
                                                 <h3 style={{ fontFamily: "var(--font-sans)", fontSize: isFeatured ? "2rem" : "1.4rem", fontWeight: 400, letterSpacing: "-0.02em", marginBottom: "6px" }}>
-                                                    {p.title.split(" ").map((w: any) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
+                                                    {(p.title || "Untitled Project").split(" ").map((w: any) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
                                                 </h3>
                                                 <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                                                     <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "#999", letterSpacing: "0.1em" }}>{p.location} · {p.year}</p>

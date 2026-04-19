@@ -75,7 +75,7 @@ export default function IndexClient({ initialProjects }: { initialProjects: any[
                                     transform: hovered === p.id ? "translateX(6px)" : "none",
                                     transition: "transform 0.4s cubic-bezier(0.16,1,0.3,1)"
                                 }}>
-                                    {p.title.split(" ").map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
+                                    {(p.title || "").split(" ").map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")}
                                 </span>
                             </div>
                             {isMobile ? (
