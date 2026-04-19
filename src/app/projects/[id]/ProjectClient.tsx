@@ -161,7 +161,7 @@ export default function ProjectClient({ project, nextProject }: { project: any, 
                     columnCount: isMobile ? 1 : 2, 
                     columnGap: isMobile ? "20px" : "40px",
                 }}>
-                    {project.gallery.map((img, i) => (
+                    {project.gallery.map((img: { src: string; span?: string }, i: number) => (
                         <motion.div 
                             key={i} 
                             initial={{ opacity: 0, y: 30 }}
