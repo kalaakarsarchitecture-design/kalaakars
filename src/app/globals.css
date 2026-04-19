@@ -179,16 +179,24 @@ h1, h2, h3, h4 {
   display: block;
 }
 
-.mobile-only {
-  display: none;
+.desktop-flex {
+  display: flex !important;
+}
+
+.mobile-only, .mobile-flex {
+  display: none !important;
 }
 
 @media (max-width: 768px) {
-  .desktop-only {
+  .desktop-only, .desktop-flex {
     display: none !important;
   }
 
   .mobile-only {
     display: block !important;
+  }
+
+  .mobile-flex {
+    display: flex !important;
   }
 }

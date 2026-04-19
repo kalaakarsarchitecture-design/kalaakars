@@ -354,12 +354,11 @@ export default function HomeClient({ initialProjects, initialSettings }: { initi
         {/* ══════════════════════════════════════
             HERO — Split-screen (desktop) / Stacked (mobile)
         ══════════════════════════════════════ */}
-        {isMobile ? (
-          /* ── PREMIUM MOBILE LAYOUT ── */
-          <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#0a0a0a" }}>
+        {/* ── PREMIUM MOBILE LAYOUT ── */}
+        <div className="mobile-flex" style={{ minHeight: "100svh", flexDirection: "column", background: "#0a0a0a", width: "100%" }}>
 
-            {/* Mobile: Full-bleed hero — tall, cinematic */}
-            <div style={{ position: "relative", height: "78vh", flexShrink: 0, overflow: "hidden" }}>
+          {/* Mobile: Full-bleed hero — tall, cinematic */}
+          <div style={{ position: "relative", height: "78svh", flexShrink: 0, overflow: "hidden" }}>
               {/* BG crossfade */}
               <AnimatePresence mode="sync">
                 <motion.div
@@ -515,11 +514,11 @@ export default function HomeClient({ initialProjects, initialSettings }: { initi
                 })}
               </nav>
             </div>
-          </div>
-        ) : (
-          /* ── DESKTOP: Original Split-Screen ── */
-          <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-            {/* LEFT PANEL */}
+        </div>
+
+        {/* ── DESKTOP: Original Split-Screen ── */}
+        <div className="desktop-flex" style={{ width: "100%", height: "100vh", overflow: "hidden" }}>
+          {/* LEFT PANEL */}
 
             <aside style={{ width: "350px", minWidth: "300px", flexShrink: 0, background: "#fff", display: "flex", flexDirection: "column", overflowY: "auto", zIndex: 10, borderRight: "1px solid var(--border)" }}>
               <div style={{ padding: "32px 40px" }}>
@@ -660,7 +659,6 @@ export default function HomeClient({ initialProjects, initialSettings }: { initi
             </div>
 
           </div>
-        )}
 
         {/* ── MARQUEE ── */}
         <Marquee text={tickerItems.join("  ✦  ")} />
