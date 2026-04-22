@@ -193,10 +193,10 @@ function FAQ({ isMobile }: { isMobile: boolean }) {
 
   return (
     <section id="faq" style={{ padding: isMobile ? "72px 20px" : "120px 40px", background: "#fff", borderTop: "1px solid var(--border)" }}>
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.5fr", gap: "64px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.5fr", gap: isMobile ? "40px" : "64px" }}>
         <div>
-           <p className="u-label" style={{ color: "var(--accent)", marginBottom: "24px" }}>Guidance</p>
-           <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(2.5rem, 6vw, 4rem)", letterSpacing: "-0.03em", lineHeight: 1 }}>Frequent<br />Inquiries</h2>
+           <p className="u-label" style={{ color: "var(--accent)", marginBottom: isMobile ? "16px" : "24px" }}>Guidance</p>
+           <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(2.5rem, 6vw, 4rem)", letterSpacing: "-0.03em", lineHeight: 1 }}>Frequent{isMobile ? " " : <br />}Inquiries</h2>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
            {faqs.map((faq, i) => (
@@ -205,12 +205,12 @@ function FAQ({ isMobile }: { isMobile: boolean }) {
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
                 style={{ 
                   width: "100%", background: "none", border: "none", display: "flex", 
-                  justifyContent: "space-between", alignItems: "center", padding: "32px 0", 
-                  cursor: "pointer", textAlign: "left"
+                  justifyContent: "space-between", alignItems: "center", padding: isMobile ? "24px 0" : "32px 0", 
+                  cursor: "pointer", textAlign: "left", gap: "16px"
                 }}
                >
-                 <span style={{ fontFamily: "var(--font-serif)", fontSize: isMobile ? "1.2rem" : "1.8rem", color: openIdx === i ? "var(--accent)" : "var(--fg)", transition: "color 0.4s" }}>{faq.q}</span>
-                 <motion.span animate={{ rotate: openIdx === i ? 45 : 0 }} style={{ fontSize: "1.5rem", fontWeight: 300 }}>+</motion.span>
+                 <span style={{ fontFamily: "var(--font-serif)", fontSize: isMobile ? "1.3rem" : "1.8rem", color: openIdx === i ? "var(--accent)" : "var(--fg)", transition: "color 0.4s", lineHeight: 1.3, flex: 1 }}>{faq.q}</span>
+                 <motion.span animate={{ rotate: openIdx === i ? 45 : 0 }} style={{ fontSize: isMobile ? "1.2rem" : "1.5rem", fontWeight: 300, color: "var(--fg)", flexShrink: 0 }}>+</motion.span>
                </button>
                <AnimatePresence>
                  {openIdx === i && (
@@ -221,7 +221,7 @@ function FAQ({ isMobile }: { isMobile: boolean }) {
                     transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     style={{ overflow: "hidden" }}
                    >
-                     <p style={{ fontFamily: "var(--font-sans)", fontSize: "1.05rem", lineHeight: 1.7, color: "#666", paddingBottom: "32px", maxWidth: "600px" }}>
+                     <p style={{ fontFamily: "var(--font-sans)", fontSize: isMobile ? "0.95rem" : "1.05rem", lineHeight: 1.7, color: "#666", paddingBottom: isMobile ? "24px" : "32px", maxWidth: "600px" }}>
                        {faq.a}
                      </p>
                    </motion.div>
