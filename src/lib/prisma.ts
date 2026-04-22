@@ -7,6 +7,9 @@ declare global {
 
 const prisma = global.__prisma ?? new PrismaClient();
 
+// Note: If deploying to Vercel, ensure the DATABASE_URL environment variable 
+// in the Vercel dashboard is set to the direct URL if the pooler connection string is not working.
+
 if (process.env.NODE_ENV !== "production") {
     global.__prisma = prisma;
 }
