@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 560">
+  <!-- Upper large triangle: spine (left col) + upper diagonal arm going top-right -->
+  <polygon points="60,30 400,30 60,290" fill="#D4A520"/>
+  <!-- Lower small triangle: lower diagonal arm going bottom-right -->
+  <polygon points="195,320 400,530 60,530" fill="#D4A520"/>
+</svg>
