@@ -1,6 +1,43 @@
-"use client";
-import { motion, AnimatePresence } from "framer-motion";
+import type { Metadata } from "next";
+import { Outfit, JetBrains_Mono, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
+
+/* ── Self-hosted Google Fonts via next/font (no render-blocking <link>) ── */
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  display: "swap",
+  variable: "--font-sans",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["300", "400"],
+  display: "swap",
+  variable: "--font-mono",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-serif",
+});
+
+export const metadata: Metadata = {
+  title: "Kalaakars Architecture Studio — Malappuram, Kerala",
+  description:
+    "Premium architecture studio specializing in modern resort projects, residential villas, and craftwork interiors. 8 years of excellence in the field of modern architecture.",
+  openGraph: {
+    title: "Kalaakars Architecture Studio",
+    description: "Mastering the balance of Style, Comfort & Function.",
+    url: "https://kalaakaars.in",
+    siteName: "Kalaakars Architecture",
+    locale: "en_IN",
+    type: "website",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -8,70 +45,59 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${outfit.variable} ${jetbrains.variable} ${cormorant.variable}`}
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=JetBrains+Mono:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
-              "name": "Kalaakars Architecture Studio",
-              "image": "https://kalaakaars.in/logo.svg",
+              name: "Kalaakars Architecture Studio",
+              image: "https://kalaakaars.in/logo.svg",
               "@id": "",
-              "url": "https://kalaakaars.in",
-              "telephone": "+917306358793",
-              "address": {
+              url: "https://kalaakaars.in",
+              telephone: "+917306358793",
+              address: {
                 "@type": "PostalAddress",
-                "streetAddress": "Opposite Hill Fort Auditorium Gate, Pathanapuram, Areekode",
-                "addressLocality": "Malappuram",
-                "postalCode": "673639",
-                "addressRegion": "KL",
-                "addressCountry": "IN"
+                streetAddress:
+                  "Opposite Hill Fort Auditorium Gate, Pathanapuram, Areekode",
+                addressLocality: "Malappuram",
+                postalCode: "673639",
+                addressRegion: "KL",
+                addressCountry: "IN",
               },
-              "geo": {
+              geo: {
                 "@type": "GeoCoordinates",
-                "latitude": 11.2384,
-                "longitude": 76.0464
+                latitude: 11.2384,
+                longitude: 76.0464,
               },
-              "openingHoursSpecification": {
+              openingHoursSpecification: {
                 "@type": "OpeningHoursSpecification",
-                "dayOfWeek": [
+                dayOfWeek: [
                   "Monday",
                   "Tuesday",
                   "Wednesday",
                   "Thursday",
                   "Friday",
-                  "Saturday"
+                  "Saturday",
                 ],
-                "opens": "09:00",
-                "closes": "18:00"
+                opens: "09:00",
+                closes: "18:00",
               },
-              "sameAs": [
+              sameAs: [
                 "https://instagram.com/kalaakaars_architecture",
-                "https://linkedin.com/company/kalaakaars-architecture"
-              ]
-            })
+                "https://linkedin.com/company/kalaakaars-architecture",
+              ],
+            }),
           }}
         />
       </head>
 
-      <body style={{ overflowX: "hidden" }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-             {children}
-          </motion.div>
-        </AnimatePresence>
-      </body>
+      <body style={{ overflowX: "hidden" }}>{children}</body>
     </html>
   );
 }
-

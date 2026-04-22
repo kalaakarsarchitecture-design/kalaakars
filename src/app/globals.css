@@ -1,7 +1,7 @@
 :root {
-  --font-sans: 'Outfit', -apple-system, sans-serif;
-  --font-serif: 'Cormorant Garamond', serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: var(--font-sans, 'Outfit'), -apple-system, sans-serif;
+  --font-serif: var(--font-serif, 'Cormorant Garamond'), serif;
+  --font-mono: var(--font-mono, 'JetBrains Mono'), monospace;
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --bg: #ffffff;
   --fg: #0c0c0c;

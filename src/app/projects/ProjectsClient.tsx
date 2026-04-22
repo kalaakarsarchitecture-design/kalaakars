@@ -2,14 +2,16 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { Logo } from "@/components/ui/Logo";
 
 function Navbar({ dark = false }: { dark?: boolean }) {
     const c = dark ? "#fff" : "#111";
     return (
         <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9000, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <img src="/logo.svg" alt="K" style={{ width: "22px", height: "26px", objectFit: "contain", filter: dark ? "brightness(0) invert(1)" : "none" }} />
+                <Logo size={22} color={dark ? "#fff" : "#111"} />
                 <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.78rem", letterSpacing: "0.18em", color: c, textTransform: "uppercase" as const }}>Kalaakars</span>
             </Link>
             <nav style={{ display: "flex", gap: "28px" }}>
@@ -102,13 +104,16 @@ export default function ProjectsClient({ initialProjects, settings }: { initialP
                                         }}>
                                             <div style={{ 
                                                 aspectRatio: isFeatured ? "21/9" : "4/5", // Adaptive Dimensions
-                                                overflow: "hidden" 
+                                                overflow: "hidden",
+                                                position: "relative"
                                             }}>
-                                                <motion.img 
-                                                    whileHover={{ scale: 1.04 }}
-                                                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                                                <Image 
                                                     src={p.heroImg} 
-                                                    style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                                    alt={p.title}
+                                                    fill
+                                                    sizes={isFeatured ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
+                                                    style={{ objectFit: "cover" }} 
+                                                    priority={i < 2}
                                                 />
                                             </div>
                                             {/* Technical Tag */}

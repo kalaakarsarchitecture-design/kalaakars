@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Marquee } from "@/components/sections/Marquee";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { Logo } from "@/components/ui/Logo";
 
 /* ═══════════════════════════════════════════
    TYPES
@@ -47,7 +48,7 @@ function NavOverlay({ open, onClose, settings }: { open: boolean; onClose: () =>
           {/* Top bar */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px 32px", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
             <Link href="/" onClick={onClose} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <img src="/logo.svg" alt="K" style={{ width: "22px", height: "26px", objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+              <Logo size={22} color="#fff" />
               <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.8rem", letterSpacing: "0.2em", color: "#fff", textTransform: "uppercase" }}>Kalaakars</span>
             </Link>
             <button onClick={onClose} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "50%", cursor: "pointer", width: "45px", height: "45px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -264,7 +265,7 @@ function Footer({ isMobile, settings }: { isMobile: boolean; settings?: any }) {
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: isMobile ? "column" : "row", gap: "32px", paddingTop: "48px", borderTop: "1px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <img src="/logo.svg" alt="K" style={{ width: "20px", height: "24px", objectFit: "contain" }} />
+            <Logo size={20} color="#D4A520" />
             <span className="u-label" style={{ fontSize: "0.55rem", letterSpacing: "0.2em" }}>© 2026 KALAAKARS ARCHITECTURE STUDIO</span>
           </div>
           <div style={{ display: "flex", gap: "32px" }}>
@@ -349,7 +350,7 @@ export default function HomeClient({
 
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: "24px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 20 }}>
                 <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <img src="/logo.svg" alt="K" style={{ width: "22px", height: "26px", objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+                  <Logo size={22} color="#fff" />
                   <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.8rem", letterSpacing: "0.22em", color: "#fff", textTransform: "uppercase" }}>Kalaakars</span>
                 </Link>
                 <button
@@ -469,7 +470,13 @@ export default function HomeClient({
                             opacity: isActive ? 1 : 0.4,
                             position: "relative"
                         }}>
-                            <Image src={p.heroImg} alt="" fill style={{ objectFit: "cover" }} />
+                            <Image 
+                              src={p.heroImg} 
+                              alt={p.title} 
+                              fill 
+                              sizes="64px"
+                              style={{ objectFit: "cover" }} 
+                            />
                         </div>
                       </div>
                     </div>
@@ -484,7 +491,7 @@ export default function HomeClient({
             <aside style={{ width: "380px", minWidth: "350px", flexShrink: 0, background: "#fff", display: "flex", flexDirection: "column", overflowY: "auto", zIndex: 10, borderRight: "1px solid var(--border)" }}>
               <div style={{ padding: "40px 48px" }}>
                 <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <img src="/logo.svg" alt="K" style={{ width: "26px", height: "30px", objectFit: "contain" }} />
+                  <Logo size={26} color="#111" />
                   <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.25em", color: "#111", textTransform: "uppercase" }}>Kalaakars</span>
                 </Link>
               </div>

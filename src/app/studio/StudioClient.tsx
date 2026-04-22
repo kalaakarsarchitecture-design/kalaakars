@@ -3,13 +3,14 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { Logo } from "@/components/ui/Logo";
 
 function Navbar({ dark = false }: { dark?: boolean }) {
     const c = dark ? "#fff" : "#111";
     return (
         <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9000, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <img src="/logo.svg" alt="K" style={{ width: "22px", height: "26px", objectFit: "contain", filter: dark ? "brightness(0) invert(1)" : "none" }} />
+                <Logo size={22} color={dark ? "#fff" : "#111"} />
                 <span style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "1.2rem", color: c }}>Kalaakars</span>
             </Link>
             <nav style={{ display: "flex", gap: "28px" }}>
@@ -182,7 +183,7 @@ export default function StudioClient({ settings }: { settings: any }) {
             <footer style={{ padding: isMobile ? "60px 20px 40px" : "80px 40px 60px", borderTop: "1px solid var(--border)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: isMobile ? "column" : "row", gap: "24px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <img src="/logo.svg" alt="K" style={{ width: "18px", height: "22px", objectFit: "contain" }} />
+                        <Logo size={18} color="#D4A520" />
                         <span className="u-label" style={{ fontSize: "0.5rem" }}>© 2026 KALAAKARS ARCHITECTURE STUDIO</span>
                     </div>
                     <div style={{ display: "flex", gap: "32px" }}>
