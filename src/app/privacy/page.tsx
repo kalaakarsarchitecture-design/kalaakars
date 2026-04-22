@@ -41,7 +41,7 @@ export default function LegalPage() {
             </section>
 
             <footer style={{ padding: "80px 40px 60px", borderTop: "1px solid var(--border)", textAlign: "center" }}>
-                <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", color: "#bbb" }}>© 2024 KALAAKARS ARCHITECTURE STUDIO</p>
+                <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", color: "#bbb" }}>© 2026 KALAAKARS ARCHITECTURE STUDIO</p>
             </footer>
         </main>
     );

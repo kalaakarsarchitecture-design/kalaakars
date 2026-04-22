@@ -98,7 +98,7 @@ export default function StudioClient({ settings }: { settings: any }) {
                         { year: "2018", event: "First breakthrough in modern resort architecture." },
                         { year: "2020", event: "Specialization in craftwork-heavy residential interiors." },
                         { year: "2022", event: "Project milestone: 50+ successful architectural handovers." },
-                        { year: "2024", event: `${settings?.yearsExp || "8"} Years of excellence in the field of modern architecture.` },
+                        { year: "2026", event: `${settings?.yearsExp || "8"} Years of excellence in the field of modern architecture.` },
                     ].map((m, i) => (
                         <div key={m.year} style={{ display: "flex", padding: "32px 0", borderTop: "1px solid var(--border)", alignItems: "baseline" }}>
                             <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", width: "120px", color: "var(--accent)" }}>{m.year}</span>
@@ -183,7 +183,7 @@ export default function StudioClient({ settings }: { settings: any }) {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: isMobile ? "column" : "row", gap: "24px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <img src="/logo.svg" alt="K" style={{ width: "18px", height: "22px", objectFit: "contain" }} />
-                        <span className="u-label" style={{ fontSize: "0.5rem" }}>© 2024 KALAAKARS ARCHITECTURE STUDIO</span>
+                        <span className="u-label" style={{ fontSize: "0.5rem" }}>© 2026 KALAAKARS ARCHITECTURE STUDIO</span>
                     </div>
                     <div style={{ display: "flex", gap: "32px" }}>
                         {["Instagram", "LinkedIn", "Behance"].map(s => (

@@ -82,3 +82,25 @@ model SiteSettings {
 
   @@map("site_settings")
 }
+
+model AdminUser {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String   
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_users")
+}
+
+model UpcomingProject {
+  id        String   @id @default(uuid())
+  title     String
+  year      String   @default("")
+  status    String   @default("Planning")
+  progress  Int      @default(0) // 0 to 100
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("upcoming_projects")
+}

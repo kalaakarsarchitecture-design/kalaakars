@@ -161,7 +161,7 @@ export default function ProjectsClient({ initialProjects, settings }: { initialP
             </section>
 
             <footer style={{ padding: "80px 40px", borderTop: "1px solid #eee", textAlign: "center" }}>
-                <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "#999", marginBottom: "16px" }}>© 2024 {settings?.companyName || "KALAAKARS ARCHITECTURE STUDIO"}</p>
+                <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "#999", marginBottom: "16px" }}>© 2026 {settings?.companyName || "KALAAKARS ARCHITECTURE STUDIO"}</p>
                 <Link href="/" className="u-label">Back to Workspace</Link>
             </footer>
         </main>

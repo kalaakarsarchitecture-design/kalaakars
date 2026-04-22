@@ -72,7 +72,7 @@ export default function JournalClient({ initialPosts, settings }: { initialPosts
 
             {/* Footer */}
             <footer style={{ padding: "80px 40px 60px", borderTop: "1px solid var(--border)", textAlign: "center" }}>
-                <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", color: "#bbb" }}>© 2024 {settings?.companyName || "KALAAKARS ARCHITECTURE STUDIO"}</p>
+                <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", color: "#bbb" }}>© 2026 {settings?.companyName || "KALAAKARS ARCHITECTURE STUDIO"}</p>
                 <div style={{ marginTop: "12px", display: "flex", justifyContent: "center", gap: "24px" }}>
                     <a href={`mailto:${settings?.email}`} style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "#999" }}>EMAIL</a>
                     <a href={`tel:${settings?.phone}`} style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "#999" }}>PHONE</a>

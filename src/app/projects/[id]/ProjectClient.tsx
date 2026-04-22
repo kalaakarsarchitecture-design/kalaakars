@@ -25,7 +25,7 @@ function Footer() {
     return (
         <footer style={{ padding: "60px 24px 40px", borderTop: "1px solid #EBEBEB" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" as const, gap: "12px" }}>
-                <span className="u-label">© 2024 Kalaakars Architecture Studio</span>
+                <span className="u-label">© 2026 Kalaakars Architecture Studio</span>
                 <div style={{ display: "flex", gap: "28px" }}>
                     {["Instagram", "LinkedIn"].map(s => (
                         <a key={s} href="#" className="u-mono" style={{ color: "#AAA" }}>{s}</a>

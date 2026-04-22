@@ -2,7 +2,7 @@ export const journalPosts = [
     {
         slug: "laterite-the-red-earth-of-malabar",
         title: "Laterite: The Red Earth of Malabar",
-        date: "Oct 12, 2024",
+        date: "Oct 12, 2026",
         summary: "Exploring the geological and architectural significance of laterite stone in Kerala's coastal climate.",
         image: "https://images.unsplash.com/photo-1582234372722-50d7ccc30eb2?q=80&w=1200",
         category: "Materiality",
@@ -16,7 +16,7 @@ export const journalPosts = [
     {
         slug: "designing-for-the-silent-monsoon",
         title: "Designing for the Silent Monsoon",
-        date: "Sep 28, 2024",
+        date: "Sep 28, 2026",
         summary: "How vertical voids can manage heavy rainfall while maintaining thermal comfort.",
         image: "https://images.unsplash.com/photo-1518107594022-4a00af80bc51?q=80&w=1200",
         category: "Climate",
@@ -29,7 +29,7 @@ export const journalPosts = [
     {
         slug: "the-nalukettu-a-modular-blueprint",
         title: "The Nalukettu: A Modular Blueprint",
-        date: "Aug 15, 2024",
+        date: "Aug 15, 2026",
         summary: "Deconstructing the traditional courtyard house to inform contemporary collective living.",
         image: "https://images.unsplash.com/photo-1600607687940-467f4b63528b?q=80&w=1200",
         category: "Research",

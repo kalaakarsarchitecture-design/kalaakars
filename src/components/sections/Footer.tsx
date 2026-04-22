@@ -34,7 +34,7 @@ export const Footer = () => {
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "60px", borderTop: "1px solid #F5F5F5" }}>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "#AAA" }}>© 2024 KALAAKARS ARCHITECTURE — ALL RIGHTS RESERVED.</span>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "#AAA" }}>© 2026 KALAAKARS ARCHITECTURE — ALL RIGHTS RESERVED.</span>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "#AAA" }}>LOCATED IN MUMBAI, INDIA.</span>
             </div>
         </footer>

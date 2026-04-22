@@ -37,6 +37,18 @@ interface JournalEntry {
     excerpt?: string;
 }
 
+interface UpcomingProject {
+    id?: string;
+    title: string;
+    year: string;
+    status: string;
+    progress: number;
+}
+interface AdminUser {
+    id: string;
+    username: string;
+    createdAt: string;
+}
 interface SiteSettings {
     phone: string;
     email: string;
@@ -371,7 +383,7 @@ function ProjectForm({
                         </div>
                         <div>
                             <label style={labelStyle}>YEAR</label>
-                            <input value={form.year} onChange={e => set("year", e.target.value)} placeholder="2024" style={inputStyle} />
+                            <input value={form.year} onChange={e => set("year", e.target.value)} placeholder="2026" style={inputStyle} />
                         </div>
                         <div style={{ gridColumn: "1 / -1" }}>
                             <label style={labelStyle}>LOCATION</label>
@@ -593,8 +605,12 @@ export default function AdminPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [journal, setJournal] = useState<JournalEntry[]>([]);
     const [settings, setSettings] = useState<SiteSettings | null>(null);
+    const [upcoming, setUpcoming] = useState<UpcomingProject[]>([]);
+    const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+    const [editingUpcoming, setEditingUpcoming] = useState<UpcomingProject | null>(null);
+    const [deleteTargetUpcoming, setDeleteTargetUpcoming] = useState<UpcomingProject | null>(null);
 
-    const [tab, setTab] = useState<"projects" | "journal" | "settings">("projects");
+    const [tab, setTab] = useState<"projects" | "journal" | "settings" | "upcoming">("projects");
     const [view, setView] = useState<"list" | "form">("list");
     
     // For Projects
@@ -619,9 +635,26 @@ export default function AdminPage() {
         if (res.ok) setJournal(await res.json());
     }, []);
 
+    const fetchUpcoming = useCallback(async () => {
+        const res = await fetch("/api/upcoming");
+        if (res.ok) setUpcoming(await res.json());
+    }, []);
+
+    const fetchAdminUsers = useCallback(async () => {
+        const res = await fetch("/api/auth/users");
+        if (res.ok) setAdminUsers(await res.json());
+    }, []);
+
     const fetchSettings = useCallback(async () => {
         const res = await fetch("/api/settings");
         if (res.ok) setSettings(await res.json());
+    }, []);
+
+    useEffect(() => { 
+        // Check session on load
+        fetch("/api/auth/users").then(res => {
+            if (res.ok) setAuthed(true);
+        });
     }, []);
 
     useEffect(() => { 
@@ -629,13 +662,25 @@ export default function AdminPage() {
             fetchProjects(); 
             fetchJournal();
             fetchSettings();
+            fetchUpcoming();
+            fetchAdminUsers();
         } 
-    }, [authed, fetchProjects, fetchJournal, fetchSettings]);
+    }, [authed, fetchProjects, fetchJournal, fetchSettings, fetchUpcoming, fetchAdminUsers]);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (pw === "kalaakars-admin-2024") { setAuthed(true); setPwError(false); }
+        const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: "admin", password: pw })
+        });
+        if (res.ok) { setAuthed(true); setPwError(false); }
         else { setPwError(true); setPw(""); }
+    };
+
+    const handleLogout = async () => {
+        await fetch("/api/auth/logout", { method: "POST" });
+        setAuthed(false);
     };
 
     const handleSave = async (p: Project) => {
@@ -679,6 +724,45 @@ export default function AdminPage() {
         if (res.ok) { showToast("Entry deleted"); fetchJournal(); }
         else showToast("Delete failed", "err");
         setDeleteTargetEntry(null);
+    };
+
+    const handleSaveUpcoming = async (u: UpcomingProject) => {
+        const isEdit = !!u.id;
+        const url = isEdit ? `/api/upcoming/${u.id}` : "/api/upcoming";
+        const method = isEdit ? "PUT" : "POST";
+        const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(u) });
+        if (res.ok) {
+            showToast(isEdit ? "Upcoming updated ✓" : "Upcoming created ✓");
+            setView("list");
+            fetchUpcoming();
+        } else {
+            showToast("Save failed", "err");
+        }
+    };
+
+    const handleDeleteUpcoming = async (u: UpcomingProject) => {
+        const res = await fetch(`/api/upcoming/${u.id}`, { method: "DELETE" });
+        if (res.ok) { showToast("Deleted"); fetchUpcoming(); }
+        else showToast("Delete failed", "err");
+        setDeleteTargetUpcoming(null);
+    };
+
+    const handleCreateAdmin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const fd = new FormData(e.target as HTMLFormElement);
+        const res = await fetch("/api/auth/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: fd.get("username"), password: fd.get("password") })
+        });
+        if (res.ok) { showToast("Admin user created"); fetchAdminUsers(); (e.target as HTMLFormElement).reset(); }
+        else { const err = await res.json(); showToast(err.error || "Creation failed", "err"); }
+    };
+
+    const handleDeleteAdmin = async (id: string) => {
+        const res = await fetch(`/api/auth/users/${id}`, { method: "DELETE" });
+        if (res.ok) { showToast("User deleted"); fetchAdminUsers(); }
+        else showToast("Delete failed", "err");
     };
 
     const handleSaveSettings = async (s: SiteSettings) => {
@@ -734,7 +818,7 @@ export default function AdminPage() {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "20px", width: isMobile ? "100%" : "auto", justifyContent: "space-between" }}>
                     <a href="/" target="_blank" rel="noreferrer" style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", textDecoration: "none", border: "1px solid rgba(255,255,255,0.12)", padding: "5px 12px" }}>VIEW SITE ↗</a>
-                    <button onClick={() => setAuthed(false)} style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.12em", background: "none", border: "none", cursor: "pointer" }}>SIGN OUT</button>
+                    <button onClick={handleLogout} style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.12em", background: "none", border: "none", cursor: "pointer" }}>SIGN OUT</button>
                 </div>
             </header>
 
@@ -755,6 +839,7 @@ export default function AdminPage() {
                 }}>
                     {[
                         { id: "projects", label: "Projects", icon: "◈" },
+                        { id: "upcoming", label: "Upcoming", icon: "◒" },
                         { id: "journal", label: "Journal", icon: "✎" },
                         { id: "settings", label: "Settings", icon: "⚙" }
                     ].map(nav => (
@@ -849,9 +934,100 @@ export default function AdminPage() {
                                 )}
                             </motion.div>
                         )}
+
+                        {tab === "upcoming" && (
+                            <motion.div key="upcoming" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                                {view === "form" ? (
+                                    <div style={{ padding: "32px", maxWidth: "600px" }}>
+                                        <h2 style={{ fontFamily: "var(--font-sans)", fontSize: "1.3rem", marginBottom: "24px" }}>{editingUpcoming?.id ? "EDIT UPCOMING" : "NEW UPCOMING"}</h2>
+                                        <form onSubmit={e => {
+                                            e.preventDefault();
+                                            const fd = new FormData(e.target as HTMLFormElement);
+                                            handleSaveUpcoming({
+                                                id: editingUpcoming?.id,
+                                                title: fd.get("title") as string,
+                                                year: fd.get("year") as string,
+                                                status: fd.get("status") as string,
+                                                progress: parseInt(fd.get("progress") as string, 10)
+                                            });
+                                        }} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                                            <div>
+                                                <label style={{ display: "block", fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", marginBottom: "6px" }}>TITLE</label>
+                                                <input name="title" defaultValue={editingUpcoming?.title || ""} required style={{ width: "100%", background: "#111", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", padding: "11px 14px", fontSize: "0.85rem", outline: "none" }} />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: "block", fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", marginBottom: "6px" }}>YEAR</label>
+                                                <input name="year" defaultValue={editingUpcoming?.year || "2026"} required style={{ width: "100%", background: "#111", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", padding: "11px 14px", fontSize: "0.85rem", outline: "none" }} />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: "block", fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", marginBottom: "6px" }}>STATUS LABEL</label>
+                                                <input name="status" defaultValue={editingUpcoming?.status || "Planning"} required style={{ width: "100%", background: "#111", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", padding: "11px 14px", fontSize: "0.85rem", outline: "none" }} />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: "block", fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", marginBottom: "6px" }}>PROGRESS (0-100)</label>
+                                                <input type="number" name="progress" min="0" max="100" defaultValue={editingUpcoming?.progress || 0} required style={{ width: "100%", background: "#111", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", padding: "11px 14px", fontSize: "0.85rem", outline: "none" }} />
+                                            </div>
+                                            <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
+                                                <button type="button" onClick={() => { setView("list"); setEditingUpcoming(null); }} style={{ padding: "10px 20px", background: "none", border: "1px solid #333", color: "#666", cursor: "pointer", fontSize: "0.6rem" }}>CANCEL</button>
+                                                <button type="submit" style={{ padding: "10px 24px", background: "#D4A520", border: "none", color: "#000", fontWeight: 700, cursor: "pointer", fontSize: "0.6rem" }}>SAVE UPCOMING</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                ) : (
+                                    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                                        <div style={{ padding: "32px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                            <h1 style={{ fontFamily: "var(--font-sans)", fontSize: "1.8rem", fontWeight: 300 }}>Future Narratives</h1>
+                                            <button onClick={() => { setEditingUpcoming(null); setView("form"); }} style={{ padding: "12px 24px", background: "#D4A520", color: "#000", fontWeight: 700, border: "none", cursor: "pointer", fontSize: "0.6rem" }}>+ NEW UPCOMING</button>
+                                        </div>
+                                        <div style={{ flex: 1, overflowY: "auto", padding: "32px" }}>
+                                            {upcoming.map(u => (
+                                                <div key={u.id} style={{ display: "flex", justifyContent: "space-between", padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.05)", alignItems: "center" }}>
+                                                    <div>
+                                                        <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", color: "#fff" }}>{u.title} <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "#D4A520", marginLeft: "8px" }}>{u.progress}%</span></p>
+                                                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.3)", marginTop: "4px" }}>{u.year} · {u.status}</p>
+                                                    </div>
+                                                    <div style={{ display: "flex", gap: "8px" }}>
+                                                        <button onClick={() => { setEditingUpcoming(u); setView("form"); }} style={{ padding: "6px 10px", background: "none", border: "1px solid #333", color: "#999", cursor: "pointer", fontSize: "0.5rem" }}>EDIT</button>
+                                                        <button onClick={() => setDeleteTargetUpcoming(u)} style={{ padding: "6px 10px", background: "none", border: "1px solid #422", color: "#dc3232", cursor: "pointer", fontSize: "0.5rem" }}>DEL</button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+                        )}
+
                         {tab === "settings" && settings && (
                             <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, overflowY: "auto" }}>
                                 <SettingsForm initial={settings} onSave={handleSaveSettings} />
+                                <div style={{ padding: "0 40px 40px", maxWidth: "800px" }}>
+                                    <hr style={{ border: "none", borderTop: "1px solid rgba(255,255,255,0.08)", margin: "40px 0" }} />
+                                    <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "2rem", marginBottom: "20px" }}>Admin Users</h2>
+                                    <div style={{ background: "#111", padding: "24px", border: "1px solid rgba(255,255,255,0.08)", marginBottom: "32px" }}>
+                                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", marginBottom: "16px" }}>EXISTING USERS</p>
+                                        {adminUsers.map(u => (
+                                            <div key={u.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "12px", marginBottom: "12px" }}>
+                                                <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.9rem" }}>{u.username}</span>
+                                                <button onClick={() => handleDeleteAdmin(u.id)} style={{ background: "none", border: "1px solid #422", color: "#dc3232", cursor: "pointer", fontSize: "0.5rem", padding: "4px 8px" }}>DELETE</button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div style={{ background: "#111", padding: "24px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", marginBottom: "16px" }}>CREATE NEW ADMIN</p>
+                                        <form onSubmit={handleCreateAdmin} style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
+                                            <div style={{ flex: 1 }}>
+                                                <label style={{ display: "block", fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", marginBottom: "6px" }}>USERNAME</label>
+                                                <input name="username" required style={{ width: "100%", background: "#000", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", padding: "10px", fontSize: "0.85rem", outline: "none" }} />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <label style={{ display: "block", fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", marginBottom: "6px" }}>PASSWORD</label>
+                                                <input name="password" type="password" required style={{ width: "100%", background: "#000", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", padding: "10px", fontSize: "0.85rem", outline: "none" }} />
+                                            </div>
+                                            <button type="submit" style={{ padding: "11px 20px", background: "#D4A520", border: "none", color: "#000", fontWeight: 700, cursor: "pointer", fontSize: "0.6rem", height: "38px" }}>CREATE</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -862,6 +1038,9 @@ export default function AdminPage() {
             <AnimatePresence>
                 {deleteTarget && (
                     <DeleteModal title={deleteTarget.title} onConfirm={() => handleDelete(deleteTarget)} onCancel={() => setDeleteTarget(null)} />
+                )}
+                {deleteTargetUpcoming && (
+                    <DeleteModal title={deleteTargetUpcoming.title} onConfirm={() => handleDeleteUpcoming(deleteTargetUpcoming)} onCancel={() => setDeleteTargetUpcoming(null)} />
                 )}
                 {deleteTargetEntry && (
                     <DeleteModal title={deleteTargetEntry.title} onConfirm={() => handleDeleteEntry(deleteTargetEntry)} onCancel={() => setDeleteTargetEntry(null)} />

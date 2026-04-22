@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function Page() {
     let mapped: any[] = [];
     let settings: any = null;
+    let upcoming: any[] = [];
 
     try {
         const projects = await prisma.project.findMany({
@@ -23,6 +24,14 @@ export default async function Page() {
     }
 
     try {
+        upcoming = await prisma.upcomingProject.findMany({
+            orderBy: { createdAt: "desc" }
+        });
+    } catch (e) {
+        console.error("Upcoming fetch failed:", e);
+    }
+
+    try {
         // @ts-ignore
         if (prisma.siteSettings) {
             settings = await prisma.siteSettings.findUnique({
@@ -33,5 +42,5 @@ export default async function Page() {
         console.error("Settings fetch failed:", e);
     }
 
-    return <HomeClient initialProjects={mapped} initialSettings={settings} />;
+    return <HomeClient initialProjects={mapped} initialSettings={settings} initialUpcoming={upcoming} />;
 }

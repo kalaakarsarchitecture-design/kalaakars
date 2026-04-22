@@ -93,7 +93,7 @@ export default function IndexClient({ initialProjects }: { initialProjects: any[
             </section>
 
             <footer style={{ padding: "40px 24px", borderTop: "1px solid #EBEBEB", display: "flex", flexDirection: isMobile ? "column" : "row", gap: "8px", justifyContent: "space-between" }}>
-                <span className="u-label">© 2024 Kalaakars Architecture Studio</span>
+                <span className="u-label">© 2026 Kalaakars Architecture Studio</span>
                 <span className="u-label">Calicut (Kozhikode), Kerala</span>
             </footer>
         </main>
