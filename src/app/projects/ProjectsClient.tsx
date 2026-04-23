@@ -6,17 +6,30 @@ import Image from "next/image";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { Logo } from "@/components/ui/Logo";
 
-function Navbar({ dark = false }: { dark?: boolean }) {
-    const c = dark ? "#fff" : "#111";
+function Navbar() {
+    const [scrolled, setScrolled] = React.useState(false);
+
+    React.useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 60);
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
     return (
-        <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9000, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <header className={`premium-nav ${scrolled ? "nav-scrolled" : "nav-transparent"}`}>
             <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <Logo size={22} color={dark ? "#fff" : "#111"} />
-                <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.78rem", letterSpacing: "0.18em", color: c, textTransform: "uppercase" as const }}>Kalaakars</span>
+                <Logo size={22} color="#111" />
+                <span style={{
+                    fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.78rem",
+                    letterSpacing: "0.18em", color: "#111", textTransform: "uppercase" as const,
+                }}>Kalaakars</span>
             </Link>
             <nav style={{ display: "flex", gap: "28px" }}>
                 {[["HOME", "/"], ["STUDIO", "/studio"], ["PROCESS", "/process"]].map(([l, h]) => (
-                    <Link key={l} href={h} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em", color: dark ? "rgba(255,255,255,0.7)" : "#999" }}>{l}</Link>
+                    <Link key={l} href={h} className="link-underline" style={{
+                        fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em",
+                        color: "#999", transition: "color 0.3s",
+                    }}>{l}</Link>
                 ))}
             </nav>
         </header>
@@ -48,7 +61,7 @@ export default function ProjectsClient({ initialProjects, settings }: { initialP
             </section>
 
             {/* Filter */}
-            <div style={{ position: "sticky", top: "70px", background: "rgba(255,255,255,0.8)", backdropFilter: "blur(20px)", zIndex: 100, padding: "20px 40px" }}>
+            <div style={{ position: "sticky", top: "var(--nav-height)", background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", zIndex: 100, padding: "16px 40px", borderBottom: "1px solid var(--border)" }}>
                 <div style={{ display: "flex", gap: "32px", overflowX: "auto", paddingBottom: "4px" }}>
                     {categories.map(c => (
                         <button 

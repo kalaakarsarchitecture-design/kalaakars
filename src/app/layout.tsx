@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit, JetBrains_Mono, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
 /* ── Self-hosted Google Fonts via next/font (no render-blocking <link>) ── */
+/* Only load weights actually used to reduce download size */
 const outfit = Outfit({
   subsets: ["latin"],
   weight: ["300", "400", "500", "700"],
@@ -12,23 +13,31 @@ const outfit = Outfit({
 
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["300", "400"],
+  weight: ["400"],
   display: "swap",
   variable: "--font-mono",
 });
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500"],
   style: ["normal", "italic"],
   display: "swap",
   variable: "--font-serif",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#0c0c0c",
+};
+
 export const metadata: Metadata = {
   title: "Kalaakars Architecture Studio — Malappuram, Kerala",
   description:
     "Premium architecture studio specializing in modern resort projects, residential villas, and craftwork interiors. 8 years of excellence in the field of modern architecture.",
+  metadataBase: new URL("https://kalaakaars.in"),
   openGraph: {
     title: "Kalaakars Architecture Studio",
     description: "Mastering the balance of Style, Comfort & Function.",
@@ -36,6 +45,10 @@ export const metadata: Metadata = {
     siteName: "Kalaakars Architecture",
     locale: "en_IN",
     type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -50,6 +63,10 @@ export default function RootLayout({
       className={`${outfit.variable} ${jetbrains.variable} ${cormorant.variable}`}
     >
       <head>
+        {/* Preconnect to image CDNs for faster LCP */}
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

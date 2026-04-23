@@ -4,17 +4,34 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { Logo } from "@/components/ui/Logo";
 
 function Navbar() {
+    const [scrolled, setScrolled] = React.useState(false);
+
+    React.useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 100);
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
     return (
-        <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9000, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <header className={`premium-nav ${scrolled ? "nav-scrolled" : "nav-transparent"}`}>
             <Link href="/" style={{ display: "flex", alignItems: "center", gap: "9px" }}>
-                <img src="/logo.svg" alt="K" style={{ width: "22px", height: "26px", filter: "brightness(0) invert(1)", objectFit: "contain" }} />
-                <span style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "1.2rem", color: "#fff" }}>Kalaakars</span>
+                <Logo size={22} color={scrolled ? "#111" : "#fff"} />
+                <span style={{
+                    fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "0.78rem",
+                    letterSpacing: "0.18em", color: scrolled ? "#111" : "#fff",
+                    textTransform: "uppercase" as const, transition: "color 0.4s",
+                }}>Kalaakars</span>
             </Link>
             <nav style={{ display: "flex", gap: "24px" }}>
                 {[["PROJECTS", "/projects"], ["STUDIO", "/studio"], ["JOURNAL", "/journal"]].map(([l, h]) => (
-                    <Link key={l} href={h} style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em", color: "rgba(255,255,255,0.7)" }}>{l}</Link>
+                    <Link key={l} href={h} className="link-underline" style={{
+                        fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.15em",
+                        color: scrolled ? "#666" : "rgba(255,255,255,0.7)",
+                        transition: "color 0.4s",
+                    }}>{l}</Link>
                 ))}
             </nav>
         </header>
