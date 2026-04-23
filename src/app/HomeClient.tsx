@@ -387,7 +387,12 @@ export default function HomeClient({
 }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [navOpen, setNavOpen] = useState(false);
-  const [loaderDone, setLoaderDone] = useState(false);
+  const [loaderDone, setLoaderDone] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("kalaakars_loaded") === "true";
+    }
+    return false;
+  });
   const isMobile = useIsMobile();
 
   const active = initialProjects[activeIdx] || initialProjects[0] || {
